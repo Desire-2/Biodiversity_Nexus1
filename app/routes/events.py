@@ -146,7 +146,7 @@ def build_email_body(event, user, confirmation_code):
         <p>Best Regards,<br>The Events Team</p>
         <div class="footer">
             <p>This message was sent to {user.username} because you registered for the event.</p>
-            <p>📧 Contact us: support@example.com</p>
+            <p>📧 Contact us: biodiversitynexus@yahoo.com</p>
             <p>🌐 Visit our website: <a href="http://biodiversitynexus.me/">www.biodiversitynexus.me/</a></p>
             <p>📱 Follow us on social media:</p>
             <div class="social-icons">
