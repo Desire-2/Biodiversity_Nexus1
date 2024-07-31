@@ -1,0 +1,23 @@
+<!-- app/templates/profile.html -->
+{% extends "base.html" %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+<section class="profile">
+    <div class="profile-header">
+        <h1>Welcome, {{ user.username }}</h1>
+        <img src="{{ url_for('static', filename='images/profile.png') }}" alt="Profile Picture">
+    </div>
+    <div class="profile-info">
+        <h2>Profile Information</h2>
+        <p><strong>Username:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <!-- Add more user information as needed -->
+    </div>
+    <div class="profile-actions">
+        <a href="{{ url_for('main.edit_profile') }}" class="btn btn-primary">Edit Profile</a>
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary">Logout</a>
+    </div>
+</section>
+{% endblock %}

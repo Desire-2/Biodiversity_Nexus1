@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="jumbotron jumbotron-fluid text-white" style="background: url('../static/uploads/hero2.jpg') no-repeat center center; background-size: cover;">
+    <div class="container text-center" style="background: rgba(0, 0, 0, 0.5); padding: 2rem;">
+        <h1 class="display-3">Welcome to the Biodiversity Nexus Student Association!</h1>
+        <p class="lead">We are dedicated to preserving and promoting biodiversity on campus and beyond.</p>
+        <hr class="my-4">
+        <p>Join us in our events and activities to make a difference.</p>
+        <a class="btn btn-primary btn-lg" href="/events" role="button"><i class="fas fa-info-circle"></i> Learn more</a>
+    </div>
+</div>
+
+<!-- Mission and Vision Section -->
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-6">
+            <h2><i class="fas fa-bullseye"></i> Our Mission</h2>
+            <p>Our mission is to foster a community dedicated to the conservation and promotion of biodiversity, inspiring action and raising awareness through education, research, and collaboration.</p>
+        </div>
+        <div class="col-md-6">
+            <h2><i class="fas fa-eye"></i> Our Vision</h2>
+            <p>Our vision is to create a world where biodiversity thrives, and ecosystems are valued and protected, ensuring a sustainable future for all living beings.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Events Section -->
+<div class="container my-5">
+    <h2 class="text-center"><i class="fas fa-calendar-alt"></i> Recent Events</h2>
+    <div class="row">
+        {% for event in recent_events %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                {% if event.event_image %}
+                <img src="{{ url_for('static', filename='event_images/' ~ event.event_image) }}" class="card-img-top event-image" alt="Event Image">
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ event.name }}</h5>
+                    <p class="event-date"><strong>Date:</strong> {{ event.date.strftime('%Y-%m-%d %H:%M') }}</p>
+                    <p class="event-type"><strong>Event Type:</strong> {{ event.event_type }}</p>
+                    <p class="event-attendees"><strong>Attendees:</strong> {{ event.attendees|length }}/{{ event.max_attendees }}</p>
+                    <a href="{{ url_for('events.events_detail', event_id=event.id) }}" class="btn btn-primary mt-auto"><i class="fas fa-book-open"></i> Read More And Register for the event</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="text-center">
+        <a href="{{ url_for('events.events_view') }}" class="btn btn-success"><i class="fas fa-arrow-right"></i> Explore More Events</a>
+    </div>
+</div>
+
+<!-- Recent Project Section -->
+<div class="container my-5">
+    <h2 class="text-center"><i class="fas fa-project-diagram"></i> Recent Project</h2>
+    <div class="row">
+        {% for project in recent_projects %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                {% if project.image_url %}
+                <img src="{{ url_for('static', filename='project_pics/' ~ project.image_url) }}" class="card-img-top event-image" alt="Event Image">
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title"><strong>{{ project.title }}</strong></h5>
+                    <p class="card-text"><strong>Status:</strong> {{ project.status }}</p>
+                    <a href="{{ url_for('projects.project_detail', project_id=project.id) }}" class="btn btn-primary mt-auto"><i class="fas fa-book-open"></i> Read More</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="text-center">
+        <a href="{{ url_for('projects.project_list') }}" class="btn btn-success"><i class="fas fa-arrow-right"></i> Explore More Projects</a>
+    </div>
+</div>
+
+<!-- What We Do Section -->
+<div class="container my-5">
+    <h2 class="text-center"><i class="fas fa-hand-holding-heart"></i> What We Do</h2>
+    <div class="row">
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <img class="card-img-top" src="../static/uploads/IMG_5869 (1).jpg" alt="Habitat Restoration" width="250" height="250">
+                <div class="card-body">
+                    <h5 class="card-title" style="font-size: 1.5rem; font-weight: bold; color: #333;">Habitat Restoration</h5>
+                    <p class="card-text">We work on restoring habitats to support diverse species and create sustainable ecosystems.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <img class="card-img-top" src="../static/uploads/IMG_6473.jpg" alt="Wildlife Monitoring" width="250" height="250">
+                <div class="card-body">
+                    <h5 class="card-title" style="font-size: 1.5rem; font-weight: bold; color: #333;">Wildlife Monitoring</h5>
+                    <p class="card-text">Our team conducts wildlife monitoring to track species populations and health.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <img class="card-img-top" src="../static/uploads/oqfzmxvs.png" alt="Community Outreach" width="250" height="250">
+                <div class="card-body">
+                    <h5 class="card-title" style="font-size: 1.5rem; font-weight: bold; color: #333;">Community Outreach</h5>
+                    <p class="card-text">We engage with local communities to raise awareness and promote biodiversity conservation.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Gallery Section -->
+<div class="container my-5">
+    <h2 class="text-center"><i class="fas fa-images"></i> Our Gallery</h2>
+    <p class="text-center">Explore moments from our events and activities captured in photos.</p>
+    <div class="row">
+        <div class="col-lg-3 col-md-4 col-6 mb-4">
+            <img src="../static/uploads/Designer2.jpeg" class="img-fluid img-thumbnail" alt="Gallery Image 1">
+        </div>
+        <div class="col-lg-3 col-md-4 col-6 mb-4">
+            <img src="../static/uploads/oqfzmxvs.png" class="img-fluid img-thumbnail" alt="Gallery Image 2">
+        </div>
+        <div class="col-lg-3 col-md-4 col-6 mb-4">
+            <img src="../static/uploads/1.jpg" class="img-fluid img-thumbnail" alt="Gallery Image 3">
+        </div>
+        <div class="col-lg-3 col-md-4 col-6 mb-4">
+            <img src="../static/uploads/6.jpg" class="img-fluid img-thumbnail" alt="Gallery Image 4">
+        </div>
+    </div>
+</div>
+
+<!-- Donation Section -->
+<div class="container my-5">
+    <h2 class="text-center"><i class="fas fa-donate"></i> Support Our Cause</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Why Donate?</h3>
+            <ul>
+                <li>Your donation helps us restore and protect critical habitats for endangered species.</li>
+                <li>Support our community outreach programs that educate and engage people on biodiversity conservation.</li>
+                <li>Enable us to conduct important wildlife monitoring and research projects.</li>
+                <li>Contribute to a sustainable future where ecosystems are valued and protected.</li>
+                <li>Help us raise awareness and inspire action for biodiversity conservation.</li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h3>Make a Donation</h3>
+            <p>Your support makes a difference. Every contribution counts.</p>
+            <a class="btn btn-primary btn-lg" href="/donate" role="button"><i class="fas fa-hand-holding-usd"></i> Donate Now</a>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action Section -->
+<div class="jumbotron jumbotron-fluid bg-primary text-black text-center">
+    <div class="container">
+        <h2>Become a Member</h2>
+        <p>Join our association and contribute to biodiversity conservation. Stay updated with our latest events and activities.</p>
+        <a class="btn btn-light btn-lg" href="/register" role="button"><i class="fas fa-user-plus"></i> Join Now</a>
+    </div>
+</div>
+
+{% endblock %}

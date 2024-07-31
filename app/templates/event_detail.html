@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8">
+            {% if event.event_image %}
+            <img src="{{ url_for('static', filename='event_images/' ~ event.event_image) }}" class="card-img-top event-image" alt="Event Image">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title"><strong>{{ event.name }}</strong></h5>
+                <p class="card-text">{{ event.description | safe }}</p>
+                <p class="event-date"><strong>Date:</strong> {{ event.date.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p class="event-type"><strong>Event Type:</strong> {{ event.event_type }}</p>
+                <p class="event-attendees"><strong>Attendees:</strong> {{ event.attendees|length }}/{{ event.max_attendees }}</p>
+                {% if event.has_passed() %}
+                <span class="badge bg-secondary">Event Passed</span>
+                {% elif event.is_full() %}
+                <span class="badge bg-danger">Event Full</span>
+                {% else %}
+                {% if current_user.is_authenticated and EventAttendance.query.filter_by(user_id=current_user.id, event_id=event.id).first() %}
+                <span class="badge bg-success">Already Registered</span>
+                {% else %}
+                <a href="{{ url_for('events.register_event', id=event.id) }}" class="btn btn-success" id="register-button">Register</a>
+                <div id="spinner" class="spinner-border text-success" role="status" style="display: none;">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                {% endif %}
+                {% endif %}
+            </div>  
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('register-button').addEventListener('click', function() {
+    var spinner = document.getElementById('spinner');
+    spinner.style.display = 'inline-block';
+});
+</script>
+{% endblock %}

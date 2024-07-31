@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Edit Profile</h1>
+    <form method="POST" action="" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.username.label }}
+            {{ form.username(size=32, class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.picture.label }}
+            {{ form.picture(class="form-control-file") }}
+        </div>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+    <hr>
+    <img src="{{ image_file }}" alt="Profile Picture" class="img-thumbnail">
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center">Manage Donations</h2>
+    <ul class="list-group">
+        {% for donation in donations %}
+        <li class="list-group-item">
+            <p><strong>User:</strong> {{ donation.user.username }}</p>
+            <p><strong>Amount:</strong> ${{ donation.amount }}</p>
+            <p><strong>Date:</strong> {{ donation.date.strftime('%Y-%m-%d %H:%M') }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

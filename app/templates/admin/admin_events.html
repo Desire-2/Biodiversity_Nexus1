@@ -1,0 +1,39 @@
+<!-- templates/admin/admin_events.html -->
+
+{% extends "admin/base.html" %}
+
+{% block title %}Manage Events{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Manage Events</h1>
+    <a href="{{ url_for('events.create_event') }}" class="btn btn-primary mb-3">Create New Event</a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in events %}
+            <tr>
+                <td>{{ event.id }}</td>
+                <td>{{ event.name }}</td>
+                <td>{{ event.date }}</td>
+                <td>{{ event.event_type }}</td>
+                <td>
+                    <a href="{{ url_for('events.update_event', event_id=event.id) }}" class="btn btn-secondary btn-sm">Edit</a>
+                    <form action="{{ url_for('events.delete_event', event_id=event.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

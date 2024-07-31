@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Threads{% endblock %}
+{% block style %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .coming-soon {
+            text-align: center;
+            background-color: #fff;
+            padding: 50px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .coming-soon h1 {
+            font-size: 36px;
+            color: #ff4500;
+        }
+        .coming-soon p {
+            font-size: 18px;
+            color: #555;
+        }
+        .coming-soon a {
+            color: #1da1f2;
+            text-decoration: none;
+        }
+        .coming-soon a:hover {
+            text-decoration: underline;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+<div class="coming-soon">
+	<h1>🚀 Coming Soon! 🚀</h1>
+	<p>Stay tuned for exciting updates! <i class="fas fa-smile"></i></p>
+	<p>Follow us on <a href="https://x.com/Biod_Nexus" target="_blank"><i class="fab fa-twitter"></i> Twitter</a> for the latest news.</p>
+</div>
+{% endblock %}

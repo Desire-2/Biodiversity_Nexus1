@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+<style>
+    .project-container {
+        margin-top: 50px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .project-card {
+        width: 100%;
+        max-width: 1200px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+    }
+    .project-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .project-description {
+        font-size: 1.2rem;
+        margin-top: 1rem;
+    }
+    .project-status, .project-date {
+        font-size: 1.1rem;
+        margin-top: 0.5rem;
+    }
+    .project-image {
+        margin-top: 1rem;
+        max-height: 400px;
+        object-fit: cover;
+        width: 100%;
+    }
+    .btn-lg {
+        margin-right: 10px;
+    }
+    .progress-container {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    .progress {
+        height: 1.5rem;
+    }
+    .progress-bar {
+        font-size: 1rem;
+        font-weight: bold;
+        text-align: center;
+        line-height: 1.5rem;
+        transition: width 1s ease-in-out;
+    }
+    .support-volunteer-buttons {
+        margin-top: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container project-container">
+    <div class="progress-container">
+        <h3>Project Progress</h3>
+        <div class="progress">
+            <div class="progress-bar bg-success" role="progressbar" style="width: {{ project.progress }}%;" aria-valuenow="{{ project.progress }}" aria-valuemin="0" aria-valuemax="100">{{ project.progress }}%</div>
+        </div>
+    </div>
+    <div class="container project-container">
+        <div class="row">
+            <div class="col-12 mb-4">
+                {% if project.image_url %}
+                <img src="{{ url_for('static', filename='project_pics/' ~ project.image_url) }}" class="card-img-top event-image" alt="Project Image">
+                {% endif %}
+                <h2 class="text-center manage-projects-title">{{ project.title }}</h2>
+                <p class="project-description">{{ project.description|safe }}</p>
+                <p class="project-status"><strong>Status:</strong> {{ project.status }}</p>
+                <p class="project-date"><strong>Date Posted:</strong> {{ project.date_posted.strftime('%B %d, %Y') }}</p>
+
+                <!-- Support and Volunteer Buttons -->
+                <div class="support-volunteer-buttons">
+                    <a href="{{ url_for('donations.donate') }}" class="btn btn-primary btn-lg"><i class="fas fa-donate"></i> Support this project by donating</a>
+                    <a href="{{ url_for('volunteers.signup', project_id=project.id) }}" class="btn btn-success btn-lg"><i class="fas fa-hands-helping"></i> Work with us as a volunteer</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

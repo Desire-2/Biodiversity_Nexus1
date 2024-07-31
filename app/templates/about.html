@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+<style>
+    .about-us {
+        margin-top: 50px;
+    }
+    .about-us h2 {
+        font-size: 2.5rem;
+        font-weight: bold;
+    }
+    .about-us .lead {
+        font-size: 1.2rem;
+        margin-bottom: 30px;
+    }
+    .about-us img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .about-us .founding-member img {
+        width: 100%;
+        height: auto;
+    }
+    .about-us h3 {
+        font-size: 1.8rem;
+        margin-top: 20px;
+        padding-left: 30px; 
+    }
+    .about-us p {
+        font-size: 1.1rem;
+        margin-top: 10px;
+    }
+    .about-us ul {
+        list-style: none;
+        padding: 0;
+    }
+    .about-us ul li {
+        padding: 10px 0;
+        display: flex;
+        align-items: center;
+    }
+    .about-us ul li i {
+        margin-right: 10px;
+        color: #28a745;
+    }
+    .about-us .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .about-us .card-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    .about-us .btn-custom {
+        background-color: #28a745;
+        color: white;
+        border-radius: 50px;
+        padding: 10px 20px;
+        font-size: 1.2rem;
+    }
+    .about-us .btn-custom:hover {
+        background-color: #218838;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="about-us">
+        <h2 class="text-center mb-4">About Us</h2>
+        <p class="lead text-center">The Biodiversity Nexus Student Association aims to connect students with a passion for preserving biodiversity. Our mission is to raise awareness and take action to protect the diverse biological systems on our planet.</p>
+    
+        <div class="row mt-5 align-items-center">
+            <div class="col-md-6 d-flex justify-content-center">
+                <img src="../static/uploads/oqfzmxvs.png" class="img-fluid" alt="Biodiversity Image">
+            </div>
+            <div class="col-md-6">
+                <h3><i class="fas fa-history"></i> Our History</h3>
+                <p>Founded in 2023, the Biodiversity Nexus Student Association has grown from a small group of dedicated students into a vibrant community of environmental advocates. Over the years, we have spearheaded numerous projects and initiatives that have made a significant impact on local and global biodiversity conservation efforts.</p>
+            </div>
+        </div>
+    
+        <div class="row mt-5 align-items-center">
+            <div class="col-md-6">
+                <h3><i class="fas fa-bullseye"></i> Our Goals</h3>
+                <ul class="list-group">
+                    <li class="list-group-item"><i class="fas fa-leaf"></i> Raise awareness about the importance of biodiversity</li>
+                    <li class="list-group-item"><i class="fas fa-recycle"></i> Promote sustainable practices among students and the wider community</li>
+                    <li class="list-group-item"><i class="fas fa-flask"></i> Support research and conservation projects</li>
+                    <li class="list-group-item"><i class="fas fa-users"></i> Foster a community of like-minded individuals who are passionate about the environment</li>
+                </ul>
+            </div>
+            <div class="col-md-6 d-flex justify-content-center">
+                <img src="../static/uploads/OIP2.jpeg" class="img-fluid" alt="Conservation Image">
+            </div>
+        </div>
+    </div>
+
+        <div class="row mt-5">
+            <div class="col-md-6">
+                <img src="../static/uploads/4.jpg" class="img-fluid" alt="Event Image">
+            </div>
+            <div class="col-md-6">
+                <h3> <i class="fas fa-calendar-alt"></i> Activities and Events</h3>
+                <p>We organize a variety of activities and events throughout the year to engage our members and the community, including:</p>
+                <ul class="list-group">
+                    <li class="list-group-item"><i class="fas fa-chalkboard-teacher"></i> Educational workshops and seminars</li>
+                    <li class="list-group-item"><i class="fas fa-hiking"></i> Field trips to local and national parks</li>
+                    <li class="list-group-item"><i class="fas fa-hands-helping"></i> Volunteer opportunities with conservation organizations</li>
+                    <li class="list-group-item"><i class="fas fa-seedling"></i> Eco-friendly campus initiatives</li>
+                    <li class="list-group-item"><i class="fas fa-globe"></i> Annual biodiversity conference</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-md-6">
+                <h3> <i class="fas fa-gift"> </i>Membership Benefits</h3>
+                <p>By joining the Biodiversity Nexus Student Association, you gain access to a wealth of resources and opportunities, including:</p>
+                <ul class="list-group">
+                    <li class="list-group-item"><i class="fas fa-network-wired"></i> Networking opportunities with professionals in the field of biodiversity and conservation</li>
+                    <li class="list-group-item"><i class="fas fa-calendar-check"></i> Exclusive access to member-only events and workshops</li>
+                    <li class="list-group-item"><i class="fas fa-handshake"></i> Opportunities to participate in impactful conservation projects</li>
+                    <li class="list-group-item"><i class="fas fa-lightbulb"></i> A platform to share your ideas and collaborate on initiatives</li>
+                    <li class="list-group-item"><i class="fas fa-tag"></i> Discounts on field trips and merchandise</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <img src="../static/uploads/maty1o7c.png" class="img-fluid" alt="Membership Benefits Image">
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col text-center">
+                <h3> <i class="fas fa-users"></i>Meet the Founding Members</h3>
+                <div class="row mt-4 founding-member">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <img src="../static/uploads/Desire.jpg" class="card-img-top" alt="Founding Member 2" width="250" height="300">
+                            <div class="card-body">
+                                <h5 class="card-title"><strong>Desire BIKORIMANA</strong></h5>
+                                <p class="card-text"><strong> Desire</strong> is a multifaceted individual with a passion for biodiversity conservation, a talent for full-stack software engineering, and a keen eye for capturing the beauty of wildlife through photography. Embracing these diverse interests, Desire brings a unique perspective to the intersection of technology, nature, and conservation.</p>
+                                <p><i class="fas fa-envelope"></i> <a href="mailto:bikorimanadesire@yahoo.com">bikorimanadesire@yahoo.com</a></p>
+                                <p><i class="fas fa-phone-alt"></i> +2 (507) 8078-4924</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <img src="../static/uploads/Theophile photo.jpeg.jpg" class="card-img-top" alt="Founding Member 1" width="250" height="300">
+                            <div class="card-body">
+                                <h5 class="card-title"><strong>Theophile MWISENEZA UWE</strong></h5>
+                                <p class="card-text"> <strong> Theophile</strong> is a committed biodiversity conservationist with a focus on botany and conservation, and a notable passion for carbon sequestration. With a keen interest in the role of plant life in mitigating carbon emissions and its impact on the environment, Theophile brings a valuable perspective to the field of biodiversity conservation.</p>
+                                <p><i class="fas fa-envelope"></i> <a href="mailto:mwisenezauwet@gmail.com">mwisenezauwet@gmail.com</a></p>
+                                <p><i class="fas fa-phone-alt"></i> +2 (507) 8749-2740</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <img src="../static/uploads/5.jpeg" class="card-img-top" alt="Founding Member 3" width="250" height="300">
+                            <div class="card-body">
+                                <h5 class="card-title"><strong>Hermenègilde UNDIMWANA</strong></h5>
+                                <p class="card-text"><strong> Hermenègilde</strong> is a dedicated biodiversity conservationist with a specialization in botany and a deep passion for amphibians. With a strong focus on the preservation of plant life and a special interest in the conservation of amphibian species, Hermenègilde brings a unique blend of expertise and enthusiasm to the field of biodiversity conservation.</p>
+                                <p><i class="fas fa-envelope"></i> <a href="mailto:hermenegide3@gmail.com">hermenegide3@gmail.com</a></p>
+                                <p><i class="fas fa-phone-alt"></i> +2 (507) 8149-9864</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-5 text-center">
+                    <div class="col">
+                        <h3>Get Involved</h3>
+                        <p>Ready to make a difference? Join us today and become part of a community dedicated to preserving the planet's biodiversity for future generations. You can start by attending one of our upcoming events, volunteering for a project, or simply spreading the word about our mission.</p>
+                        <a href="/register" class="btn btn-custom btn-lg mt-3">Join Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+<!-- templates/gallery.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Gallery</h1>
+    <form class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="search" value="{{ request.args.get('search', '') }}">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+    <div class="row mt-3">
+        {% for item in items.items %}
+        <div class="col-md-4">
+            <div class="card mb-4">
+                {% if item.media_type == 'image' %}
+                <img src="{{ url_for('static', filename=item.file_url) }}" class="card-img-top" alt="{{ item.title }}">
+                {% elif item.media_type == 'video' %}
+                <div class="embed-responsive embed-responsive-16by9">
+                    <video class="embed-responsive-item" controls>
+                        <source src="{{ url_for('static', filename=item.file_url) }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.title }}</h5>
+                    <p class="card-text">{{ item.description }}</p>
+                    <p class="card-text"><small class="text-muted">Category: {{ item.category }}</small></p>
+                    <p class="card-text"><small class="text-muted">Tags: {{ item.tags }}</small></p>
+                    <p class="card-text"><small class="text-muted">Location: {{ item.location }}</small></p>
+                    <p class="card-text"><small class="text-muted">Date Taken: {{ item.date_taken }}</small></p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            {% if items.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('gallery.gallery_view', page=items.prev_num, search=request.args.get('search', '')) }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+            {% for page_num in items.iter_pages() %}
+            <li class="page-item {% if page_num == items.page %}active{% endif %}"><a class="page-link" href="{{ url_for('gallery.gallery_view', page=page_num, search=request.args.get('search', '')) }}">{{ page_num }}</a></li>
+            {% endfor %}
+            {% if items.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('gallery.gallery_view', page=items.next_num, search=request.args.get('search', '')) }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endblock %}

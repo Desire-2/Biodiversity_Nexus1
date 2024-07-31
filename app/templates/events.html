@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+<style>
+    .event-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .event-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .event-date, .event-type, .event-attendees {
+        font-size: 1rem;
+    }
+    .card-title {
+        font-weight: bolder;
+    }
+    .event-image {
+        height: 200px;
+        object-fit: cover;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center mb-4"><i class="fas fa-calendar-alt"></i> Upcoming Events</h2>
+    <div class="row">
+        {% for event in events %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card event-card h-100" data-toggle="tooltip" title="{{ event.description }}">
+                {% if event.event_image %}
+                <img src="{{ url_for('static', filename='event_images/' ~ event.event_image) }}" class="card-img-top event-image" alt="Event Image">
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title"><strong>{{ event.name }}</strong></h5>
+                    <p class="event-date"><i class="fas fa-calendar-day"></i> <strong>Date:</strong> {{ event.date.strftime('%Y-%m-%d %H:%M') }}</p>
+                    <p class="event-type"><i class="fas fa-tag"></i> <strong>Event Type:</strong> {{ event.event_type }}</p>
+                    <p class="event-attendees"><i class="fas fa-users"></i> <strong>Attendees:</strong> {{ event.attendees|length }}/{{ event.max_attendees }}</p>
+                    <a href="{{ url_for('events.events_detail', event_id=event.id) }}" class="btn btn-primary mt-auto"><i class="fas fa-info-circle"></i> Read More And Register</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

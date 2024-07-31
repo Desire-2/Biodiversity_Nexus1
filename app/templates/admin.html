@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center">Upcoming Events</h2>
+    <ul class="list-group">
+        {% for event in events %}
+        <li class="list-group-item">
+            <h5>{{ event.name }}</h5>
+            <p>{{ event.description }}</p>
+            <p><strong>Date:</strong> {{ event.date.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p><strong>Event Type:</strong> {{ event.event_type }}</p>
+            <p><strong>Attendees:</strong> {{ event.attendees|length }}/{{ event.max_attendees }}</p>
+            {% if event.has_passed() %}
+            <span class="badge bg-secondary">Event Passed</span>
+            {% elif event.is_full() %}
+            <span class="badge bg-danger">Event Full</span>
+            {% else %}
+            <a href="{{ url_for('events.register_event', id=event.id) }}" class="btn btn-success">Register</a>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
