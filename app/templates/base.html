@@ -74,97 +74,90 @@
             color: white;
         }
 
-        footer {
-            background: #2f80ed;
-            color: white;
-            padding: 40px 0;
-            text-align: center;
-            margin-top: 20px;
-            position: relative;
-            bottom: 0;
-            width: 100%;
+        .footer {
+            background-color: #2C3E50;
+            color: #ecf0f1;
+            padding: 60px 0;
+            font-family: Arial, sans-serif;
         }
-
-        footer .footer-content {
+        .footer .footer-content {
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            justify-content: space-around;
+            flex-wrap: wrap;
         }
-
-        footer .footer-content .social-icons {
-            margin: 10px 0;
+        .footer .footer-section {
+            flex: 1;
+            padding: 20px;
+            min-width: 250px;
         }
-
-        footer .social-icons a {
-            color: white;
+        .footer h5 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #f39c12;
+            position: relative;
+        }
+        .footer h5::after {
+            content: '';
+            width: 50px;
+            height: 2px;
+            background: #f39c12;
+            position: absolute;
+            left: 0;
+            bottom: -10px;
+        }
+        .footer .social-icons a {
+            color: #ecf0f1;
             margin: 0 10px;
-            font-size: 1.2em;
-            transition: color 0.3s;
+            font-size: 20px;
+            text-decoration: none;
+            transition: color 0.3s ease;
         }
-
-        footer .social-icons a:hover {
-            color: #56ccf2;
+        .footer .social-icons a:hover {
+            color: #3498db;
         }
-
-        footer p {
-            margin: 10px 0;
-        }
-
-        footer .newsletter {
-            margin: 20px 0;
-        }
-
-        footer .newsletter input[type="email"] {
+        .footer .newsletter input[type="email"] {
             padding: 10px;
+            width: 80%;
             border: none;
-            border-radius: 4px;
-            margin-right: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
         }
-
-        footer .newsletter input[type="submit"] {
+        .footer .newsletter input[type="submit"] {
             padding: 10px 20px;
             border: none;
-            border-radius: 4px;
-            background-color: #56ccf2;
+            border-radius: 5px;
+            background-color: #3498db;
             color: white;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
-
-        footer .newsletter input[type="submit"]:hover {
-            background-color: #2f80ed;
+        .footer .newsletter input[type="submit"]:hover {
+            background-color: #2980b9;
         }
-
-        footer .contact-info {
-            margin: 20px 0;
+        .footer .contact-info p, .footer .quick-links a, .footer .resources a, .footer .partners a, .footer .whatsapp a {
+            margin: 10px 0;
+            color: #ecf0f1;
         }
-
-        footer .contact-info p {
-            margin: 5px 0;
+        .footer .quick-links a, .footer .resources a, .footer .partners a, .footer .whatsapp a {
+            text-decoration: none;
+            transition: color 0.3s ease;
         }
-
-        @media (max-width: 768px) {
-            .nav-link {
-                justify-content: center;
-                margin: 5px 0;
-            }
-
-            footer {
-                padding: 20px 0;
-            }
-
-            footer .footer-content {
-                align-items: flex-start;
-            }
-
-            footer .newsletter {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            footer .newsletter input[type="email"],
-            footer .newsletter input[type="submit"] {
-                margin: 5px 0;
-            }
+        .footer .quick-links a:hover, .footer .resources a:hover, .footer .partners a:hover, .footer .whatsapp a:hover {
+            color: #3498db;
+        }
+        .footer .contact-info p i, .footer .testimonial i, .footer .quick-links a i, .footer .resources a i, .footer .partners a i, .footer .whatsapp a i {
+            margin-right: 10px;
+        }
+        .footer-bottom {
+            text-align: center;
+            padding: 20px 0;
+            border-top: 1px solid #7f8c8d;
+        }
+        .footer .testimonial, .footer .about-us {
+            margin: 10px 0;
+        }
+        .footer .testimonial p {
+            font-style: italic;
         }
     </style>
 </head>
@@ -265,26 +258,62 @@
         </div>
     </div>
 
-    <footer>
+    <footer class="footer">
         <div class="footer-content">
-            <div class="social-icons">
+            <div class="footer-section social-icons">
+                <h5>Follow Us</h5>
                 <a href="https://www.facebook.com/profile.php?id=61563059986794"><i class="fab fa-facebook-f"></i></a>
                 <a href="https://x.com/Biod_Nexus"><i class="fab fa-twitter"></i></a>
                 <a href="https://www.instagram.com/biodiversitynexus/"><i class="fab fa-instagram"></i></a>
                 <a href="https://www.linkedin.com/company/biodiversity-nexus"><i class="fab fa-linkedin-in"></i></a>
             </div>
-            <div class="newsletter">
+            <div class="footer-section newsletter">
                 <h5>Subscribe to our Newsletter</h5>
                 <form>
                     <input type="email" placeholder="Enter your email" required>
                     <input type="submit" value="Subscribe">
                 </form>
             </div>
-            <div class="contact-info">
-                <p><i class="fas fa-map-marker-alt"></i>Rwanda, Kigali, College of Science and Technology</p>
+            <div class="footer-section contact-info">
+                <h5>Contact Us</h5>
+                <p><i class="fas fa-map-marker-alt"></i> Rwanda, Kigali, College of Science and Technology</p>
                 <p><i class="fas fa-phone-alt"></i> +2 (507) 8078-4924</p>
                 <p><i class="fas fa-envelope"></i> biodiversitynexus@yahoo.com</p>
             </div>
+            <div class="footer-section quick-links">
+                <h5>Quick Links</h5>
+                <a href="/about"><i class="fas fa-angle-right"></i> About Us</a><br>
+                <a href="/projects"><i class="fas fa-angle-right"></i> Projects</a><br>
+                <a href="/posts"><i class="fas fa-angle-right"></i> Blog</a><br>
+                <a href="https://wa.me/25078084924"><i class="fas fa-angle-right"></i> Contact</a><br>
+                <a href="/events"><i class="fas fa-angle-right"></i> Events</a><br>
+                <a href="{{ url_for('donations.donate') }}"> <i class="fas fa-angle-right"></i> Donate</a>
+            </div>
+            <div class="footer-section resources">
+                <h5>Resources</h5>
+                <a href="#"><i class="fas fa-file-alt"></i> Reports</a><br>
+                <a href="#"><i class="fas fa-book"></i> Articles</a><br>
+                <a href="#"><i class="fas fa-video"></i> Videos</a><br>
+                <a href="#"><i class="fas fa-question-circle"></i> FAQs</a>
+            </div>
+            <div class="footer-section partners">
+                <h5>Our Partners</h5>
+                <a href="#"><i class="fas fa-handshake"></i> Partner 1</a><br>
+                <a href="#"><i class="fas fa-handshake"></i> Partner 2</a><br>
+                <a href="#"><i class="fas fa-handshake"></i> Partner 3</a><br>
+                <a href="#"><i class="fas fa-handshake"></i> Partner 4</a>
+            </div>
+            <div class="footer-section about-us">
+                <h5>About Us</h5>
+                <p>We are committed to preserving the biodiversity of the Albertine Rift Valley and Africa. Join us in our mission to protect and nurture nature's guardians.</p>
+            </div>
+            <div class="footer-section testimonial">
+                <h5>Testimonials</h5>
+                <p><i class="fas fa-quote-left"></i> Biodiversity Nexus has transformed our approach to conservation. Their dedication is unmatched. <i class="fas fa-quote-right"></i> - Liliane IRADUKUNDA, Conservationist</p>
+                <p><i class="fas fa-quote-left"></i> A truly inspiring organization making real impact. <i class="fas fa-quote-right"></i> - Diana UWIMANA, Biology Conservationist</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
             <p>&copy; 2024 Biodiversity Nexus Student Association. All rights reserved.</p>
         </div>
     </footer>
