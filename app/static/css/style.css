@@ -34,6 +34,67 @@ body {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
 }
 
+    /* Media Queries */
+    @media (max-width: 1200px) {
+        .jumbotron h1 {
+            font-size: 2.5rem;
+        }
+        .jumbotron p.lead {
+            font-size: 1.25rem;
+        }
+        .jumbotron p {
+            font-size: 1rem;
+        }
+        .jumbotron .btn-lg {
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .jumbotron h1 {
+            font-size: 2rem;
+        }
+        .jumbotron p.lead {
+            font-size: 1rem;
+        }
+        .jumbotron p {
+            font-size: 0.9rem;
+        }
+        .jumbotron .btn-lg {
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .jumbotron h1 {
+            font-size: 1.75rem;
+        }
+        .jumbotron p.lead {
+            font-size: 0.9rem;
+        }
+        .jumbotron p {
+            font-size: 0.8rem;
+        }
+        .jumbotron .btn-lg {
+            font-size: 0.8rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .jumbotron h1 {
+            font-size: 1.5rem;
+        }
+        .jumbotron p.lead {
+            font-size: 0.8rem;
+        }
+        .jumbotron p {
+            font-size: 0.75rem;
+        }
+        .jumbotron .btn-lg {
+            font-size: 0.75rem;
+        }
+    }
+
 .container h2 {
     margin-bottom: 2rem;
 }
