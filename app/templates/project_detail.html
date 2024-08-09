@@ -54,63 +54,6 @@
     .support-volunteer-buttons {
         margin-top: 2rem;
     }
-
-    /* Media Queries */
-    @media (max-width: 1200px) {
-        .project-title {
-            font-size: 2rem;
-        }
-        .project-description {
-            font-size: 1rem;
-        }
-        .project-status, .project-date {
-            font-size: 1rem;
-        }
-    }
-
-    @media (max-width: 992px) {
-        .project-title {
-            font-size: 1.75rem;
-        }
-        .project-description {
-            font-size: 0.9rem;
-        }
-        .project-status, .project-date {
-            font-size: 0.9rem;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .project-title {
-            font-size: 1.5rem;
-        }
-        .project-description {
-            font-size: 0.8rem;
-        }
-        .project-status, .project-date {
-            font-size: 0.8rem;
-        }
-        .btn-lg {
-            margin-right: 5px;
-            font-size: 0.9rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .project-title {
-            font-size: 1.25rem;
-        }
-        .project-description {
-            font-size: 0.75rem;
-        }
-        .project-status, .project-date {
-            font-size: 0.75rem;
-        }
-        .btn-lg {
-            margin-right: 5px;
-            font-size: 0.8rem;
-        }
-    }
 </style>
 {% endblock %}
 
@@ -128,7 +71,7 @@
                 {% if project.image_url %}
                 <img src="{{ url_for('static', filename='project_pics/' ~ project.image_url) }}" class="card-img-top event-image" alt="Project Image">
                 {% endif %}
-                <h2 class="text-center manage-projects-title">{{ project.title }}</h2>
+                <h2 class="text-center manage-projects-title"><strong>{{ project.title }}</strong></h2>
                 <p class="project-description">{{ project.description|safe }}</p>
                 <p class="project-status"><strong>Status:</strong> {{ project.status }}</p>
                 <p class="project-date"><strong>Date Posted:</strong> {{ project.date_posted.strftime('%B %d, %Y') }}</p>
