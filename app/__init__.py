@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 import paypalrestsdk
 from flask_mail import Mail
-from flask_pymongo import PyMongo
+# from flask_pymongo import PyMongo
 from dotenv import load_dotenv
 import os
 from werkzeug.utils import secure_filename
@@ -19,7 +19,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("SQLALCHEMY_DATABASE_URI")
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
-app.config['MONGO_URI'] = os.getenv("MONGO_URI")
+# app.config['MONGO_URI'] = os.getenv("MONGO_URI")
 app.config['MAIL_SERVER'] = os.getenv("MAIL_SERVER")
 app.config['MAIL_PORT'] = int(os.getenv("MAIL_PORT"))
 app.config['MAIL_USE_TLS'] = os.getenv("MAIL_USE_TLS").lower() in ['true', '1', 't']
@@ -35,7 +35,7 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 migrate = Migrate(app, db)
 mail = Mail(app)
-mongo = PyMongo(app)
+# mongo = PyMongo(app)
 
 # Flask-Login configurations
 login_manager.login_view = 'auth.login'
