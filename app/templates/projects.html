@@ -70,31 +70,7 @@
                 <img src="{{ url_for('static', filename='project_pics/' ~ project.image_url) }}" class="card-img-top event-image" alt="Project Image">
                 {% endif %}
                 <div class="card-body d-flex flex-column">
-                    <h5 class="card-title"> <!-- Recent Events Section -->
-<div class="container my-5">
-    <h2 class="text-center"><i class="fas fa-calendar-alt"></i> Recent Events</h2>
-    <div class="row">
-        {% for event in recent_events %}
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                {% if event.event_image %}
-                <img src="{{ url_for('static', filename='event_images/' ~ event.event_image) }}" class="card-img-top event-image" alt="Event Image">
-                {% endif %}
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title"> <strong> {{ event.name }} </strong></h5>
-                    <p class="event-date"><strong>Date:</strong> {{ event.date.strftime('%Y-%m-%d %H:%M') }}</p>
-                    <p class="event-type"><strong>Event Type:</strong> {{ event.event_type }}</p>
-                    <p class="event-attendees"><strong>Attendees:</strong> {{ event.attendees|length }}/{{ event.max_attendees }}</p>
-                    <a href="{{ url_for('events.events_detail', event_id=event.id) }}" class="btn btn-primary mt-auto"><i class="fas fa-book-open"></i> Read More And Register for the event</a>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-    <div class="text-center">
-        <a href="{{ url_for('events.events_view') }}" class="btn btn-success"><i class="fas fa-arrow-right"></i> Explore More Events</a>
-    </div>
-</div> <strong> {{ project.title }}</strong></h5>
+                    <h5 class="card-title"> <strong>{{ project.title }} </strong></h5>
                     <p class="card-text"><small class="text-muted">Status: {{ project.status }}</small></p>
                     <a href="{{ url_for('projects.project_detail', project_id=project.id) }}" class="btn btn-primary mt-auto"><i class="fas fa-book-open"></i> Read More</a>
                 </div>
@@ -141,7 +117,7 @@
         {% endfor %}
     </div>
 
-    {% if current_user.is_authenticated and current_user.is_admin %}
+    {% if current_user.is_authenticated and current_user.role == "admin" %}
     <div class="text-center mt-5">
         <a href="{{ url_for('projects.new_project') }}" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Add New Project</a>
     </div>

@@ -5,9 +5,10 @@
     .about-us {
         margin-top: 50px;
     }
-    .about-us h2 {
+    .about-us h2, .objectives h2, .key-areas h2 {
         font-size: 2.5rem;
         font-weight: bold;
+        color: #28a745;
     }
     .about-us .lead {
         font-size: 1.2rem;
@@ -65,6 +66,70 @@
     .about-us .btn-custom:hover {
         background-color: #218838;
     }
+
+    .key-areas {
+        margin-top: 70px;
+        background-color: #f9f9f9;
+        padding: 50px 0;
+        border-radius: 10px;
+    }
+   .key-areas ul {
+        list-style: none;
+        padding-left: 0;
+    }
+    .key-areas ul li {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: flex-start;
+    }
+    .key-areas ul li i {
+        font-size: 1.5rem;
+        color: #28a745;
+        margin-right: 15px;
+    }
+    
+    .section-header {
+        font-size: 1.8rem;
+        margin-bottom: 30px;
+        color: #333;
+    }
+    .text-section {
+        margin-bottom: 50px;
+    }
+
+        @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .animated {
+        animation-duration: 1s;
+        animation-fill-mode: both;
+    }
+    
+    .fadeIn {
+        animation-name: fadeIn;
+    }
+    
+    .fadeInUp {
+        animation-name: fadeInUp;
+    }
 </style>
 {% endblock %}
 
@@ -72,8 +137,42 @@
 <div class="container mt-5">
     <div class="about-us">
         <h2 class="text-center mb-4">About Us</h2>
-        <p class="lead text-center">The Biodiversity Nexus Student Association aims to connect students with a passion for preserving biodiversity. Our mission is to raise awareness and take action to protect the diverse biological systems on our planet.</p>
-    
+        <p class="lead text-center">Biodiversity Nexus is a youth-driven, community-focused organization dedicated to fostering the protection and promotion of biodiversity.
+        </p>
+
+        <div class="text-center mt-5"></div>
+            <p style="font-size: 1.2rem; color: #333;">
+                🌍 In an era where environmental degradation and climate change are increasingly prevalent, our NGO aims to inspire, educate, and mobilize youth and underprivileged communities to take action in preserving and restoring ecosystems. 🌿
+            </p>
+            <p style="font-size: 1.2rem; color: #333;">
+                🌱 We believe in creating a world where biodiversity thrives, ecosystems are valued, and communities are resilient to climate challenges. 🌳 Together, we can make a lasting difference!
+            </p>
+        </div>
+
+                       <!-- Key Areas of Intervention Section -->
+                <div class="key-areas text-center">
+                    <h2>Key Areas of Intervention</h2>
+                    <div class="row justify-content-center mt-4">
+                        <div class="col-md-5 text-section">
+                            <h3 class="section-header animated fadeInUp"><i class="fas fa-hand-holding-heart"></i> Community Outreach</h3>
+                            <p>Engage communities through awareness campaigns, workshops, and conservation programs that inspire collective action in biodiversity conservation.</p>
+                        </div>
+                        <div class="col-md-5 text-section">
+                            <h3 class="section-header animated fadeInUp"><i class="fas fa-graduation-cap"></i> Education and Research</h3>
+                            <p>Provide educational programs and conduct research that supports biodiversity preservation and develops innovative approaches to sustainability.</p>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center mt-5">
+                        <div class="col-md-5 text-section">
+                            <h3 class="section-header animated fadeInUp"><i class="fas fa-cloud-sun-rain"></i> Climate Change Mitigation and Adaptation</h3>
+                            <p>Implement projects that reduce carbon footprints, increase awareness of climate change, and support adaptation measures in vulnerable communities.</p>
+                        </div>
+                        <div class="col-md-5 text-section">
+                            <h3 class="section-header animated fadeInUp"><i class="fas fa-mountain"></i> Landscape Restoration and Protection</h3>
+                            <p>Initiate and support landscape restoration efforts, including reforestation, wetland rehabilitation, and natural habitat conservation.</p>
+                        </div>
+                    </div>
+                </div>
         <div class="row mt-5 align-items-center">
             <div class="col-md-6 d-flex justify-content-center">
                 <img src="../static/uploads/oqfzmxvs.png" class="img-fluid" alt="Biodiversity Image">
