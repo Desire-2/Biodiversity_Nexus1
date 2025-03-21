@@ -95,7 +95,7 @@
             {% endfor %}
         {% else %}
             <div class="empty-section">
-                <img src="{{ url_for('static', filename='uploads/no-event.jpg') }}" alt="No Events">
+                <img src="{{ url_for('static', filename='uploads/no-eventlllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll.jpg') }}" alt="No Events">
                 <p>No upcoming events at the moment. Stay tuned for updates!</p>
             </div>
         {% endif %}
@@ -112,7 +112,6 @@
                     <img src="{{ url_for('static', filename='event_images/' ~ event.event_image) }}" class="card-img-top event-image" alt="Event Image">
                     {% endif %}
                     <div class="event-body">
-                        <h5 class="card-title">{{ event.name }}</h5>
                         <p class="event-date"><i class="fas fa-calendar-day"></i> <strong>Date:</strong> {{ event.date.strftime('%Y-%m-%d %H:%M') }}</p>
                         <p class="event-type"><i class="fas fa-tag"></i> <strong>Type:</strong> {{ event.event_type }}</p>
                         <span class="badge bg-secondary badge-custom">Event Passed</span>
