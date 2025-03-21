@@ -2,161 +2,347 @@
 
 {% block content %}
 <!-- Hero Section -->
-<div class="jumbotron jumbotron-fluid text-white" style="background: url('../static/uploads/hero2.jpg') no-repeat center center; background-size: cover;">
-    <div class="container text-center" style="background: rgba(0, 0, 0, 0.5); padding: 2rem;">
-        <h1 class="display-3">Welcome to the Biodiversity Nexus!</h1>
-                                <p class="lead">🌿 We are dedicated to preserving biodiversity through inspired youth and community empowerment. 🌍</p>
+<div class="jumbotron jumbotron-fluid text-white d-flex align-items-center" style="background: url('../static/uploads/hero2.jpg') no-repeat center center/cover; height: 80vh; position: relative;" data-aos="fade-in" data-aos-duration="1500">
+    <div class="container text-center" style="background: rgba(0, 0, 0, 0.6); padding: 3rem; border-radius: 10px;" data-aos="zoom-in" data-aos-duration="1500">
+        <h1 class="display-3 font-weight-bold">Welcome to the <span class="text-success">Biodiversity Nexus</span>!</h1>
+        <p class="lead">🌿 We are dedicated to preserving biodiversity through inspired youth and community empowerment. 🌍</p>
         <hr class="my-4">
         <p>Join us in our events and activities to make a difference.</p>
-        <a class="btn btn-primary btn-lg" href="/events" role="button"><i class="fas fa-info-circle"></i> Learn more</a>
+        <a class="btn btn-lg btn-success shadow-lg mt-3 px-4 py-2" href="/events" role="button"><i class="fas fa-info-circle"></i> Learn More</a>
     </div>
 </div>
 
 <!-- Mission and Vision Section -->
-<div class="container my-5">
+<div class="container py-5" data-aos="fade-up" data-aos-duration="1000">
     <div class="row">
-        <div class="col-md-6">
-            <h2><i class="fas fa-bullseye"></i> Our Mission</h2>
+        <div class="col-md-6 p-3 text-center">
+            <h2 class="text-primary"><i class="fas fa-bullseye"></i> Our Mission</h2>
             <p>Our mission is to foster a community dedicated to the conservation and promotion of biodiversity, inspiring action and raising awareness through education, research, and collaboration.</p>
         </div>
-        <div class="col-md-6">
-            <h2><i class="fas fa-eye"></i> Our Vision</h2>
+        <div class="col-md-6 p-3 text-center">
+            <h2 class="text-primary"><i class="fas fa-eye"></i> Our Vision</h2>
             <p>Our vision is to create a world where biodiversity thrives, and ecosystems are valued and protected, ensuring a sustainable future for all living beings.</p>
         </div>
     </div>
 </div>
 
-<!-- Recent Project Section -->
-<div class="container my-5">
-    <h2 class="text-center"><i class="fas fa-project-diagram"></i> Recent Project</h2>
-    <div class="row">
-        {% for project in recent_projects %}
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                {% if project.image_url %}
-                <img src="{{ url_for('static', filename='project_pics/' ~ project.image_url) }}" class="card-img-top event-image" alt="Event Image">
-                {% endif %}
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title"><strong>{{ project.title }}</strong></h5>
-                    <p class="card-text"><strong>Status:</strong> {{ project.status }}</p>
-                    <a href="{{ url_for('projects.project_detail', project_id=project.id) }}" class="btn btn-primary mt-auto"><i class="fas fa-book-open"></i> Read More</a>
-                </div>
-            </div>
+<!-- Statistics Section -->
+<div class="container py-5" data-aos="fade-up" data-aos-duration="1000">
+    <div class="row text-center">
+        <div class="col-md-3 mb-4">
+            <div class="h1 text-success font-weight-bold" data-count="150">0</div>
+            <p>Projects Completed</p>
         </div>
-        {% endfor %}
-    </div>
-    <div class="text-center">
-        <a href="{{ url_for('projects.project_list') }}" class="btn btn-success"><i class="fas fa-arrow-right"></i> Explore More Projects</a>
+        <div class="col-md-3 mb-4">
+            <div class="h1 text-success font-weight-bold" data-count="50">0</div>
+            <p>Events Hosted</p>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="h1 text-success font-weight-bold" data-count="200">0</div>
+            <p>Volunteers</p>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="h1 text-success font-weight-bold" data-count="1000">0</div>
+            <p>Donations Received</p>
+        </div>
     </div>
 </div>
 
+<!-- Recent Projects Section -->
+<div class="container my-5" data-aos="fade-up" data-aos-duration="1000">
+    <h2 class="text-center text-success mb-4">
+      <i class="fas fa-project-diagram"></i> Recent Projects
+    </h2>
+    <div class="row">
+      {% for project in recent_projects %}
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card creative-card shadow-sm h-100 border-0">
+          {% if project.image_url %}
+          <div class="card-img-wrapper position-relative">
+            <img src="{{ url_for('static', filename='project_pics/' ~ project.image_url) }}" class="card-img-top creative-img" alt="Project Image">
+            <div class="overlay">
+              <div class="overlay-content">
+                <i class="fas fa-book-open fa-2x text-white"></i>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title font-weight-bold text-dark">{{ project.title }}</h5>
+            <p class="card-text text-muted"><strong>Status:</strong> {{ project.status }}</p>
+            <a href="{{ url_for('projects.project_detail', project_id=project.id) }}" class="btn btn-outline-success mt-auto">
+              <i class="fas fa-arrow-right"></i> Read More
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-4">
+      <a href="{{ url_for('projects.project_list') }}" class="btn btn-success px-4 py-2">
+        <i class="fas fa-arrow-right"></i> Explore More Projects
+      </a>
+    </div>
+  </div>
+  
 <!-- What We Do Section -->
-<div class="container my-5">
-    <h2 class="text-center"><i class="fas fa-hand-holding-heart"></i> What We Do</h2>
+<div class="container my-5" data-aos="fade-up" data-aos-duration="1000">
+    <h2 class="text-center text-success mb-4">
+      <i class="fas fa-hand-holding-heart"></i> What We Do
+    </h2>
     <div class="row">
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <img class="card-img-top" src="../static/uploads/IMG_5869 (1).jpg" alt="Habitat Restoration" width="250" height="250">
-                <div class="card-body">
-                    <h5 class="card-title" style="font-size: 1.5rem; font-weight: bold; color: #333;">Habitat Restoration</h5>
-                    <p class="card-text">We work on restoring habitats to support diverse species and create sustainable ecosystems.</p>
-                </div>
+      <!-- Habitat Restoration Card -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card creative-card border-0 shadow-sm h-100">
+          <div class="card-img-wrapper position-relative">
+            <img src="../static/uploads/IMG_5869 (1).jpg" class="card-img-top creative-img" alt="Habitat Restoration">
+            <div class="overlay">
+              <div class="overlay-content">
+                <i class="fas fa-tree fa-2x text-white"></i>
+              </div>
             </div>
+          </div>
+          <div class="card-body">
+            <h5 class="card-title font-weight-bold" style="font-size: 1.5rem; color: #333;">Habitat Restoration</h5>
+            <p class="card-text">We work on restoring habitats to support diverse species and create sustainable ecosystems.</p>
+          </div>
         </div>
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <img class="card-img-top" src="../static/uploads/IMG_6473.jpg" alt="Wildlife Monitoring" width="250" height="250">
-                <div class="card-body">
-                    <h5 class="card-title" style="font-size: 1.5rem; font-weight: bold; color: #333;">Wildlife Monitoring</h5>
-                    <p class="card-text">Our team conducts wildlife monitoring to track species populations and health.</p>
-                </div>
+      </div>
+      <!-- Wildlife Monitoring Card -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card creative-card border-0 shadow-sm h-100">
+          <div class="card-img-wrapper position-relative">
+            <img src="../static/uploads/IMG_6473.jpg" class="card-img-top creative-img" alt="Wildlife Monitoring">
+            <div class="overlay">
+              <div class="overlay-content">
+                <i class="fas fa-binoculars fa-2x text-white"></i>
+              </div>
             </div>
+          </div>
+          <div class="card-body">
+            <h5 class="card-title font-weight-bold" style="font-size: 1.5rem; color: #333;">Wildlife Monitoring</h5>
+            <p class="card-text">Our team conducts wildlife monitoring to track species populations and health.</p>
+          </div>
         </div>
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <img class="card-img-top" src="../static/uploads/oqfzmxvs.png" alt="Community Outreach" width="250" height="250">
-                <div class="card-body">
-                    <h5 class="card-title" style="font-size: 1.5rem; font-weight: bold; color: #333;">Community Outreach</h5>
-                    <p class="card-text">We engage with local communities to raise awareness and promote biodiversity conservation.</p>
-                </div>
+      </div>
+      <!-- Community Outreach Card -->
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card creative-card border-0 shadow-sm h-100">
+          <div class="card-img-wrapper position-relative">
+            <img src="../static/uploads/oqfzmxvs.png" class="card-img-top creative-img" alt="Community Outreach">
+            <div class="overlay">
+              <div class="overlay-content">
+                <i class="fas fa-users fa-2x text-white"></i>
+              </div>
             </div>
+          </div>
+          <div class="card-body">
+            <h5 class="card-title font-weight-bold" style="font-size: 1.5rem; color: #333;">Community Outreach</h5>
+            <p class="card-text">We engage with local communities to raise awareness and promote biodiversity conservation.</p>
+          </div>
         </div>
+      </div>
     </div>
-</div>
+  </div>
+
 <!-- Recent Events Section -->
-<div class="container my-5">
-    <h2 class="text-center"><i class="fas fa-calendar-alt"></i> Recent Events</h2>
+<div class="container my-5" data-aos="fade-up" data-aos-duration="1000">
+    <h2 class="text-center text-success mb-4">
+      <i class="fas fa-calendar-alt"></i> Recent Events
+    </h2>
     <div class="row">
-        {% for event in recent_events %}
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                {% if event.event_image %}
-                <img src="{{ url_for('static', filename='event_images/' ~ event.event_image) }}" class="card-img-top event-image" alt="Event Image">
-                {% endif %}
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title"> <strong> {{ event.name }} </strong></h5>
-                    <p class="event-date"><strong>Date:</strong> {{ event.date.strftime('%Y-%m-%d %H:%M') }}</p>
-                    <p class="event-type"><strong>Event Type:</strong> {{ event.event_type }}</p>
-                    <p class="event-attendees"><strong>Attendees:</strong> {{ event.attendees|length }}/{{ event.max_attendees }}</p>
-                    <a href="{{ url_for('events.events_detail', event_id=event.id) }}" class="btn btn-primary mt-auto"><i class="fas fa-book-open"></i> Read More And Register for the event</a>
-                </div>
+      {% for event in recent_events %}
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card creative-card shadow-sm h-100 border-0">
+          {% if event.event_image %}
+          <div class="card-img-wrapper position-relative">
+            <img src="{{ url_for('static', filename='event_images/' ~ event.event_image) }}" class="card-img-top creative-img" alt="Event Image">
+            <div class="overlay">
+              <div class="overlay-content">
+                <i class="fas fa-calendar-check fa-2x text-white"></i>
+              </div>
             </div>
+          </div>
+          {% endif %}
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title font-weight-bold text-dark">{{ event.name }}</h5>
+            <p class="event-date text-muted"><strong>Date:</strong> {{ event.date.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p class="event-type text-muted"><strong>Event Type:</strong> {{ event.event_type }}</p>
+            <p class="event-attendees text-muted"><strong>Attendees:</strong> {{ event.attendees|length }}/{{ event.max_attendees }}</p>
+            <a href="{{ url_for('events.events_detail', event_id=event.id) }}" class="btn btn-outline-success mt-auto">
+              <i class="fas fa-book-open"></i> Read More &amp; Register
+            </a>
+          </div>
         </div>
-        {% endfor %}
+      </div>
+      {% endfor %}
     </div>
-    <div class="text-center">
-        <a href="{{ url_for('events.events_view') }}" class="btn btn-success"><i class="fas fa-arrow-right"></i> Explore More Events</a>
+    <div class="text-center mt-4">
+      <a href="{{ url_for('events.events_view') }}" class="btn btn-success px-4 py-2">
+        <i class="fas fa-arrow-right"></i> Explore More Events
+      </a>
     </div>
-</div>
+  </div>
+
 <!-- Gallery Section -->
-<div class="container my-5">
-    <h2 class="text-center"><i class="fas fa-images"></i> Our Gallery</h2>
+<div class="container my-5" data-aos="fade-up" data-aos-duration="1000">
+    <h2 class="text-center text-success"><i class="fas fa-images"></i> Our Gallery</h2>
     <p class="text-center">Explore moments from our events and activities captured in photos.</p>
     <div class="row">
         <div class="col-lg-3 col-md-4 col-6 mb-4">
-            <img src="../static/uploads/Designer2.jpeg" class="img-fluid img-thumbnail" alt="Gallery Image 1">
+            <img src="../static/uploads/Designer2.jpeg" class="img-fluid img-thumbnail gallery-img hover-zoom" alt="Gallery Image 1" data-toggle="modal" data-target="#galleryModal">
         </div>
         <div class="col-lg-3 col-md-4 col-6 mb-4">
-            <img src="../static/uploads/oqfzmxvs.png" class="img-fluid img-thumbnail" alt="Gallery Image 2">
+            <img src="../static/uploads/oqfzmxvs.png" class="img-fluid img-thumbnail gallery-img hover-zoom" alt="Gallery Image 2" data-toggle="modal" data-target="#galleryModal">
         </div>
         <div class="col-lg-3 col-md-4 col-6 mb-4">
-            <img src="../static/uploads/1.jpg" class="img-fluid img-thumbnail" alt="Gallery Image 3">
+            <img src="../static/uploads/1.jpg" class="img-fluid img-thumbnail gallery-img hover-zoom" alt="Gallery Image 3" data-toggle="modal" data-target="#galleryModal">
         </div>
         <div class="col-lg-3 col-md-4 col-6 mb-4">
-            <img src="../static/uploads/6.jpg" class="img-fluid img-thumbnail" alt="Gallery Image 4">
+            <img src="../static/uploads/6.jpg" class="img-fluid img-thumbnail gallery-img hover-zoom" alt="Gallery Image 4" data-toggle="modal" data-target="#galleryModal">
         </div>
+    </div>
+</div>
+
+<!-- Gallery Modal -->
+<div class="modal fade" id="galleryModal" tabindex="-1" role="dialog" aria-labelledby="galleryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body p-0">
+                <img src="" class="img-fluid" id="modalImage" alt="Gallery Modal Image">
+            </div>
+            <div class="modal-footer p-2 justify-content-center">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Testimonials Section -->
+<div class="container my-5" data-aos="fade-up" data-aos-duration="1000">
+    <h2 class="text-center text-success"><i class="fas fa-comments"></i> Testimonials</h2>
+    <div id="testimonialCarousel" class="carousel slide" data-ride="carousel">
+        <ol class="carousel-indicators">
+            <li data-target="#testimonialCarousel" data-slide-to="0" class="active"></li>
+            <li data-target="#testimonialCarousel" data-slide-to="1"></li>
+            <li data-target="#testimonialCarousel" data-slide-to="2"></li>
+        </ol>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="d-flex justify-content-center">
+                    <div class="col-md-8">
+                        <blockquote class="blockquote text-center">
+                            <p class="mb-4">"Joining Biodiversity Nexus has transformed my view on conservation. Their dedication is truly inspiring!"</p>
+                            <footer class="blockquote-footer">Alex, <cite title="Volunteer">Volunteer</cite></footer>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="d-flex justify-content-center">
+                    <div class="col-md-8">
+                        <blockquote class="blockquote text-center">
+                            <p class="mb-4">"The events and projects are well-organized and impactful. Highly recommend getting involved!"</p>
+                            <footer class="blockquote-footer">Jamie, <cite title="Community Member">Community Member</cite></footer>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="d-flex justify-content-center">
+                    <div class="col-md-8">
+                        <blockquote class="blockquote text-center">
+                            <p class="mb-4">"I have seen real change in our local ecosystem thanks to the passionate efforts of this organization."</p>
+                            <footer class="blockquote-footer">Morgan, <cite title="Environmental Activist">Environmental Activist</cite></footer>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a class="carousel-control-prev" href="#testimonialCarousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#testimonialCarousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
     </div>
 </div>
 
 <!-- Donation Section -->
-<div class="container my-5">
-    <h2 class="text-center"><i class="fas fa-donate"></i> Support Our Cause</h2>
-    <div class="row">
-        <div class="col-md-6">
-            <h3>Why Donate?</h3>
-            <ul>
-                <li>Your donation helps us restore and protect critical habitats for endangered species.</li>
-                <li>Support our community outreach programs that educate and engage people on biodiversity conservation.</li>
-                <li>Enable us to conduct important wildlife monitoring and research projects.</li>
-                <li>Contribute to a sustainable future where ecosystems are valued and protected.</li>
-                <li>Help us raise awareness and inspire action for biodiversity conservation.</li>
-            </ul>
+<div class="container my-5" data-aos="fade-up" data-aos-duration="1000">
+    <div class="row align-items-center bg-light p-5 rounded shadow-sm">
+      <!-- Why Donate Column -->
+      <div class="col-md-6 mb-4 mb-md-0">
+        <h3 class="text-success mb-4"><i class="fas fa-donate"></i> Why Donate?</h3>
+        <ul class="list-unstyled donation-list">
+          <li><i class="fas fa-check-circle text-success mr-2"></i>Your donation helps us restore and protect critical habitats for endangered species.</li>
+          <li><i class="fas fa-check-circle text-success mr-2"></i>Support our community outreach programs that educate and engage people on biodiversity conservation.</li>
+          <li><i class="fas fa-check-circle text-success mr-2"></i>Enable us to conduct important wildlife monitoring and research projects.</li>
+          <li><i class="fas fa-check-circle text-success mr-2"></i>Contribute to a sustainable future where ecosystems are valued and protected.</li>
+          <li><i class="fas fa-check-circle text-success mr-2"></i>Help us raise awareness and inspire action for biodiversity conservation.</li>
+        </ul>
+      </div>
+      <!-- Make a Donation Column -->
+      <div class="col-md-6">
+        <div class="donation-card text-center p-5 rounded shadow">
+          <h3 class="text-white">Make a Donation</h3>
+          <p class="text-white-50">Your support makes a difference. Every contribution counts.</p>
+          <a class="btn btn-light btn-lg mt-3 px-4 py-2" href="/donate" role="button"><i class="fas fa-hand-holding-usd"></i> Donate Now</a>
         </div>
-        <div class="col-md-6">
-            <h3>Make a Donation</h3>
-            <p>Your support makes a difference. Every contribution counts.</p>
-            <a class="btn btn-primary btn-lg" href="/donate" role="button"><i class="fas fa-hand-holding-usd"></i> Donate Now</a>
-        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Call to Action Section -->
+<div class="jumbotron jumbotron-fluid bg-primary text-black text-center" data-aos="fade-in" data-aos-duration="1500">
+    <div class="container py-5">
+        <h2 class="font-weight-bold">Become a Member</h2>
+        <p>Join our association and contribute to biodiversity conservation. Stay updated with our latest events and activities.</p>
+        <a class="btn btn-lg btn-light px-4 py-2" href="/register" role="button"><i class="fas fa-user-plus"></i> Join Now</a>
     </div>
 </div>
 
-<!-- Call to Action Section -->
-<div class="jumbotron jumbotron-fluid bg-primary text-black text-center">
-    <div class="container">
-        <h2>Become a Member</h2>
-        <p>Join our association and contribute to biodiversity conservation. Stay updated with our latest events and activities.</p>
-        <a class="btn btn-light btn-lg" href="/register" role="button"><i class="fas fa-user-plus"></i> Join Now</a>
-    </div>
-</div>
+<!-- Back to Top Button -->
+<a href="#top" class="back-to-top btn btn-success btn-lg" style="position: fixed; bottom: 30px; right: 30px; display: none; z-index: 9999;"><i class="fas fa-chevron-up"></i></a>
+
+<script>
+    // Back to Top button functionality
+    window.addEventListener('scroll', function() {
+        const button = document.querySelector('.back-to-top');
+        if (window.pageYOffset > 300) {
+            button.style.display = 'block';
+        } else {
+            button.style.display = 'none';
+        }
+    });
+
+    // Smooth scroll for back-to-top
+    document.querySelector('.back-to-top').addEventListener('click', function(e) {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Simple Counter Animation
+    document.addEventListener('DOMContentLoaded', function() {
+        const counters = document.querySelectorAll('[data-count]');
+        counters.forEach(counter => {
+            const updateCount = () => {
+                const target = +counter.getAttribute('data-count');
+                const count = +counter.innerText;
+                const increment = target / 200;
+                if (count < target) {
+                    counter.innerText = Math.ceil(count + increment);
+                    setTimeout(updateCount, 10);
+                } else {
+                    counter.innerText = target;
+                }
+            };
+            updateCount();
+        });
+    });
+</script>
+
 
 {% endblock %}

@@ -100,3 +100,32 @@ def edit_gallery_item(id):
         form.date_taken.data = item.date_taken
 
     return render_template('edit_gallery_item.html', form=form, item=item)
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'mov'}
+
+@gallery.route('/admin/gallery/manage', methods=['GET', 'POST'])
+@login_required
+def manage_gallery():
+    if not current_user.role == "admin":
+        flash('You do not have permission to access this page.', 'danger')
+        return redirect(url_for('main.index'))
+
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('No file part', 'danger')
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            flash('No selected file', 'danger')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join('static/uploads', filename))
+            flash('File uploaded successfully!', 'success')
+            return redirect(url_for('gallery.manage_gallery'))
+        else:
+            flash('Invalid file type', 'danger')
+            return redirect(request.url)
+    return render_template('admin/manage_gallery.html')

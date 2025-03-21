@@ -1,0 +1,163 @@
+/* Hover zoom effect */
+.hover-zoom {
+    transition: transform 0.3s ease;
+}
+.hover-zoom:hover {
+    transform: scale(1.05);
+}
+
+/* Back to top button styling */
+.back-to-top {
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Gallery styling enhancements */
+.gallery-img {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    width: 100%;
+    height: 250px; /* Fixed height for consistency */
+    object-fit: cover; /* Crop the image to fill the container */
+}
+.gallery-img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Donation List Hover Effect */
+.donation-list li {
+margin-bottom: 1.2rem;
+font-size: 1.1rem;
+transition: transform 0.3s ease, color 0.3s ease;
+}
+.donation-list li:hover {
+transform: translateX(10px);
+color: #27ae60;
+}
+/* Donation Card Gradient Background */
+.donation-card {
+background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+/* Creative Card Styling */
+.creative-card {
+transition: transform 0.3s ease, box-shadow 0.3s ease;
+overflow: hidden;
+border-radius: 10px;
+}
+.creative-card:hover {
+transform: translateY(-5px);
+box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+.card-img-wrapper {
+position: relative;
+}
+.creative-img {
+width: 100%;
+height: 220px;
+object-fit: cover;
+border-top-left-radius: 10px;
+border-top-right-radius: 10px;
+}
+/* Overlay Effect */
+.overlay {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: linear-gradient(45deg, rgba(0,0,0,0.6), rgba(0,0,0,0.2));
+opacity: 0;
+transition: opacity 0.3s ease;
+}
+.card-img-wrapper:hover .overlay {
+opacity: 1;
+}
+.overlay-content {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+}
+
+/* Creative Card Styling for Recent Projects */
+.creative-card {
+transition: transform 0.3s ease, box-shadow 0.3s ease;
+overflow: hidden;
+border-radius: 10px;
+}
+.creative-card:hover {
+transform: translateY(-5px);
+box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+.card-img-wrapper {
+position: relative;
+}
+.creative-img {
+width: 100%;
+height: 220px;
+object-fit: cover;
+border-top-left-radius: 10px;
+border-top-right-radius: 10px;
+}
+/* Overlay Effect */
+.overlay {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: linear-gradient(45deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2));
+opacity: 0;
+transition: opacity 0.3s ease;
+}
+.card-img-wrapper:hover .overlay {
+opacity: 1;
+}
+.overlay-content {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+}
+
+.creative-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    border-radius: 10px;
+  }
+  .creative-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  }
+  .card-img-wrapper {
+    position: relative;
+  }
+  .creative-img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+  /* Overlay Effect */
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(0,0,0,0.6), rgba(0,0,0,0.2));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .card-img-wrapper:hover .overlay {
+    opacity: 1;
+  }
+  .overlay-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }

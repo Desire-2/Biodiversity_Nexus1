@@ -10,6 +10,7 @@ from app.routes.donations import donations
 from app.routes.projects import projects
 from app.routes.volunteers import volunteers
 from app.routes.gallery import gallery
+from app.routes.posts import posts
 
 blueprints = [
     main,
@@ -21,7 +22,9 @@ blueprints = [
     donations,
     projects,
     volunteers,
-    gallery]
+    gallery,
+    posts
+    ]
 
 def register_blueprints(app):
     for bp in blueprints:

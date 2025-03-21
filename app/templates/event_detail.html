@@ -1,40 +1,198 @@
 {% extends 'base.html' %}
+
+{% block styles %}
+<style>
+    /* Background with parallax effect */
+    .hero-banner {
+        background: url("{{ url_for('static', filename='event_images/' ~ event.event_image) }}") center/cover no-repeat;
+        height: 400px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: #fff;
+        font-size: 2rem;
+        font-weight: bold;
+        text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+        background-attachment: fixed;
+    }
+
+    /* Event container */
+    .event-container {
+        max-width: 850px;
+        margin: auto;
+        padding: 30px;
+    }
+
+    /* Glassmorphic event card */
+    .event-card {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(15px);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .event-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Stylish Typography */
+    h2, h3 {
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+    }
+
+    /* Countdown Timer */
+    .countdown {
+        font-size: 1.5rem;
+        text-align: center;
+        font-weight: bold;
+        color: #ff4d6d;
+    }
+
+    /* Animated Register Button */
+    .btn-register {
+        background: linear-gradient(135deg, #ff4d6d, #ff6a88);
+        color: #fff;
+        font-size: 1.2rem;
+        padding: 12px 30px;
+        border-radius: 25px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .btn-register:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(255, 77, 109, 0.5);
+    }
+
+    /* Badge Styling */
+    .badge-status {
+        font-size: 1rem;
+        padding: 10px 20px;
+        border-radius: 20px;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .badge-passed {
+        background: #bbb;
+    }
+
+    .badge-full {
+        background: #d9534f;
+    }
+
+    .badge-registered {
+        background: #5cb85c;
+    }
+
+    /* Floating Social Media Buttons */
+    .social-share {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .social-share a {
+        display: inline-block;
+        margin: 5px;
+        font-size: 1.5rem;
+        padding: 10px;
+        border-radius: 50%;
+        transition: transform 0.3s ease;
+    }
+
+    .social-share a:hover {
+        transform: scale(1.1);
+    }
+
+    .facebook { background: #1877F2; color: #fff; }
+    .twitter { background: #1DA1F2; color: #fff; }
+    .whatsapp { background: #25D366; color: #fff; }
+
+    /* Light/Dark Mode */
+    .dark-mode {
+        background: #222;
+        color: #fff;
+    }
+
+    .dark-mode .event-card {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .event-container {
+            padding: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container my-5">
-    <div class="row">
-        <div class="col-md-8">
-            {% if event.event_image %}
-            <img src="{{ url_for('static', filename='event_images/' ~ event.event_image) }}" class="card-img-top event-image" alt="Event Image">
+<div class="hero-banner">
+    {{ event.name }}
+</div>
+
+<div class="container event-container">
+    <div class="event-card">
+        <h2>{{ event.name }}</h2>
+        <p class="text-center"><i class="fas fa-calendar-day"></i> <strong>Date:</strong> {{ event.date.strftime('%Y-%m-%d %H:%M') }}</p>
+        <p class="text-center countdown" id="countdown"></p>
+        <p><i class="fas fa-tag"></i> <strong>Event Type:</strong> {{ event.event_type }}</p>
+        <p><i class="fas fa-users"></i> <strong>Attendees:</strong> <span id="attendee-count">{{ event.attendees|length }}</span>/{{ event.max_attendees }}</p>
+        <p class="event-description">{{ event.description | safe }}</p>
+
+        <!-- Event Status -->
+        <div class="text-center mt-3">
+            {% if event.has_passed() %}
+                <span class="badge badge-status badge-passed">Event Passed</span>
+            {% elif event.is_full() %}
+                <span class="badge badge-status badge-full">Event Full</span>
+            {% else %}
+                {% if current_user.is_authenticated %}
+                    {% set attendance = EventAttendance.query.filter_by(user_id=current_user.id, event_id=event.id).first() %}
+                    {% if attendance %}
+                        <span class="badge badge-status badge-registered">Already Registered</span>
+                    {% else %}
+                        <a href="{{ url_for('events.register_event', id=event.id) }}" class="btn btn-register mt-3" id="register-button">Register Now</a>
+                    {% endif %}
+                {% endif %}
             {% endif %}
-            <div class="card-body">
-                <h5 class="card-title"><strong>{{ event.name }}</strong></h5>
-                <p class="card-text">{{ event.description | safe }}</p>
-                <p class="event-date"><strong>Date:</strong> {{ event.date.strftime('%Y-%m-%d %H:%M') }}</p>
-                <p class="event-type"><strong>Event Type:</strong> {{ event.event_type }}</p>
-                <p class="event-attendees"><strong>Attendees:</strong> {{ event.attendees|length }}/{{ event.max_attendees }}</p>
-                {% if event.has_passed() %}
-                <span class="badge bg-secondary">Event Passed</span>
-                {% elif event.is_full() %}
-                <span class="badge bg-danger">Event Full</span>
-                {% else %}
-                {% if current_user.is_authenticated and EventAttendance.query.filter_by(user_id=current_user.id, event_id=event.id).first() %}
-                <span class="badge bg-success">Already Registered</span>
-                {% else %}
-                <a href="{{ url_for('events.register_event', id=event.id) }}" class="btn btn-success" id="register-button">Register</a>
-                <div id="spinner" class="spinner-border text-success" role="status" style="display: none;">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                {% endif %}
-                {% endif %}
-            </div>  
+        </div>
+
+        <!-- Social Share -->
+        <div class="social-share">
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}" target="_blank" class="facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://twitter.com/intent/tweet?url={{ request.url }}&text=Check out this event!" target="_blank" class="twitter"><i class="fab fa-twitter"></i></a>
+            <a href="https://api.whatsapp.com/send?text=Check out this event: {{ request.url }}" target="_blank" class="whatsapp"><i class="fab fa-whatsapp"></i></a>
         </div>
     </div>
 </div>
 
 <script>
-document.getElementById('register-button').addEventListener('click', function() {
-    var spinner = document.getElementById('spinner');
-    spinner.style.display = 'inline-block';
-});
+    // Countdown Timer
+    function updateCountdown() {
+        let eventDate = new Date("{{ event.date.strftime('%Y-%m-%dT%H:%M:%S') }}").getTime();
+        let now = new Date().getTime();
+        let timeLeft = eventDate - now;
+
+        if (timeLeft > 0) {
+            let days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            let hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById('countdown').innerHTML = `Starts in: ${days} days, ${hours} hours`;
+        } else {
+            document.getElementById('countdown').innerHTML = "Event Started!";
+        }
+    }
+
+    setInterval(updateCountdown, 1000);
 </script>
 {% endblock %}

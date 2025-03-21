@@ -1,99 +1,238 @@
-<!-- templates/admin/dashboard.html -->
-
 {% extends "base.html" %}
 
 {% block content %}
 <div class="container-fluid">
-    <div class="row">
-        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-            <div class="position-sticky">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{{ url_for('admin.dashboard') }}">
-                            Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('events.admin_events_view') }}">
-                            Manage Events
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('projects.manage_projects') }}">
-                            Manage Projects
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('gallery.admin_gallery') }}">
-                            Manage Gallery
-                        </a>
-                    </li>
+  <div class="row">
+    <!-- Sidebar -->
+    <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar">
+      <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active text-white" aria-current="page" href="{{ url_for('admin.dashboard') }}">
+              <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{{ url_for('events.admin_events_view') }}">
+              <i class="fas fa-calendar-alt me-2"></i>Manage Events
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{{ url_for('projects.manage_projects') }}">
+              <i class="fas fa-tasks me-2"></i>Manage Projects
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{{ url_for('gallery.manage_gallery') }}">
+              <i class="fas fa-images me-2"></i>Manage Gallery
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{{ url_for('admin.manage_users') }}">
+              <i class="fas fa-users me-2"></i>Manage Users
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="{{ url_for('posts.manage_posts') }}">
+              <i class="fas fa-clipboard me-2"></i>Manage Posts
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('admin.manage_users') }}">
-                            Manage Users
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+    <!-- Main Content -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <!-- Header -->
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Admin Dashboard</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+            <i class="fas fa-calendar"></i> This week
+          </button>
+        </div>
+      </div>
 
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Admin Dashboard</h1>
+      <!-- Overview Cards -->
+      <div class="row">
+        <!-- Total Events -->
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-start-primary shadow h-100 py-2">
+            <div class="card-body">
+              <div class="row align-items-center">
+                <div class="col me-2">
+                  <div class="text-xs fw-bold text-primary text-uppercase mb-1">Total Events</div>
+                  <div class="h5 mb-0 fw-bold text-gray-800">{{ total_events }}</div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-calendar-alt fa-2x text-gray-300"></i>
+                </div>
+              </div>
             </div>
-            
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="card text-white bg-primary mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Total Events</h5>
-                            <p class="card-text">Number of events: {{ total_events }}</p>
-                        </div>
-                    </div>
+          </div>
+        </div>
+        <!-- Gallery Items -->
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-start-success shadow h-100 py-2">
+            <div class="card-body">
+              <div class="row align-items-center">
+                <div class="col me-2">
+                  <div class="text-xs fw-bold text-success text-uppercase mb-1">Gallery Items</div>
+                  <div class="h5 mb-0 fw-bold text-gray-800">{{ total_gallery_items }}</div>
                 </div>
-                <div class="col-md-4">
-                    <div class="card text-white bg-success mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Total Gallery Items</h5>
-                            <p class="card-text">Number of gallery items: {{ total_gallery_items }}</p>
-                        </div>
-                    </div>
+                <div class="col-auto">
+                  <i class="fas fa-images fa-2x text-gray-300"></i>
                 </div>
-                <div class="col-md-4">
-                    <div class="card text-white bg-danger mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Total Users</h5>
-                            <p class="card-text">Number of users: {{ total_users }}</p>
-                        </div>
-                    </div>
-                </div>
+              </div>
             </div>
-            
-            <div class="row">
-                <div class="col-md-12">
-                    <h2>Recent Activities</h2>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Activity</th>
-                                <th>Time</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for activity in recent_activities %}
-                            <tr>
-                                <td>{{ loop.index }}</td>
-                                <td>{{ activity.description }}</td>
-                                <td>{{ activity.timestamp }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+          </div>
+        </div>
+        <!-- Total Users -->
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-start-info shadow h-100 py-2">
+            <div class="card-body">
+              <div class="row align-items-center">
+                <div class="col me-2">
+                  <div class="text-xs fw-bold text-info text-uppercase mb-1">Total Users</div>
+                  <div class="h5 mb-0 fw-bold text-gray-800">{{ total_users }}</div>
                 </div>
+                <div class="col-auto">
+                  <i class="fas fa-users fa-2x text-gray-300"></i>
+                </div>
+              </div>
             </div>
-        </main>
-    </div>
+          </div>
+        </div>
+        <!-- Active Projects -->
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-start-warning shadow h-100 py-2">
+            <div class="card-body">
+              <div class="row align-items-center">
+                <div class="col me-2">
+                  <div class="text-xs fw-bold text-warning text-uppercase mb-1">Active Projects</div>
+                  <div class="h5 mb-0 fw-bold text-gray-800">{{ active_projects }}</div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-tasks fa-2x text-gray-300"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart & Quick Stats Row -->
+      <div class="row">
+        <!-- Attendance Chart -->
+        <div class="col-lg-8 mb-4">
+          <div class="card shadow">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+              <h6 class="m-0 fw-bold text-primary">Event Attendance Trend</h6>
+            </div>
+            <div class="card-body">
+              <canvas id="attendanceChart"></canvas>
+            </div>
+          </div>
+        </div>
+        <!-- Quick Stats -->
+        <div class="col-lg-4 mb-4">
+          <div class="card shadow">
+            <div class="card-header py-3">
+              <h6 class="m-0 fw-bold text-primary">Quick Stats</h6>
+            </div>
+            <div class="card-body">
+              <p><strong>Upcoming Events:</strong> {{ upcoming_events }}</p>
+              <p><strong>Past Events:</strong> {{ past_events }}</p>
+              <p><strong>Pending Approvals:</strong> {{ pending_approvals }}</p>
+              <!-- Add more quick stats as needed -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activities Table -->
+      <div class="row">
+        <div class="col-12">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 fw-bold text-primary">Recent Activities</h6>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered" id="activitiesTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Activity</th>
+                      <th>Time</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for activity in recent_activities %}
+                    <tr>
+                      <td>{{ loop.index }}</td>
+                      <td>{{ activity.action }}</td>
+                      <td>{{ activity.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 </div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Setup for the event attendance trend chart
+  var ctx = document.getElementById('attendanceChart').getContext('2d');
+  var attendanceChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+          labels: {{ chart_labels|safe }},
+          datasets: [{
+              label: 'Attendance',
+              data: {{ chart_data|safe }},
+              backgroundColor: 'rgba(78, 115, 223, 0.1)',
+              borderColor: 'rgba(78, 115, 223, 1)',
+              borderWidth: 2,
+              pointRadius: 3,
+              pointBackgroundColor: 'rgba(78, 115, 223, 1)',
+              pointBorderColor: 'rgba(78, 115, 223, 1)',
+              pointHoverRadius: 3,
+              pointHoverBackgroundColor: 'rgba(78, 115, 223, 1)',
+              pointHoverBorderColor: 'rgba(78, 115, 223, 1)'
+          }]
+      },
+      options: {
+          responsive: true,
+          scales: {
+              x: {
+                  display: true,
+                  title: {
+                      display: true,
+                      text: 'Time'
+                  }
+              },
+              y: {
+                  display: true,
+                  title: {
+                      display: true,
+                      text: 'Attendees'
+                  },
+                  beginAtZero: true
+              }
+          }
+      }
+  });
+</script>
 {% endblock %}

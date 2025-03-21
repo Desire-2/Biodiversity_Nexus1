@@ -2,46 +2,130 @@
 
 {% block styles %}
 <style>
+    /* Global Styles */
+    body {
+        background: #f4f7f9;
+        font-family: 'Poppins', sans-serif;
+    }
+    h2 {
+        font-weight: bold;
+    }
+    
+    /* Event Cards */
     .event-card {
-        transition: transform 0.3s, box-shadow 0.3s;
+        background: rgba(255, 255, 255, 0.85);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease-in-out;
+        display: flex;
+        flex-direction: column;
+        border: none;
     }
     .event-card:hover {
-        transform: scale(1.05);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    .event-date, .event-type, .event-attendees {
-        font-size: 1rem;
-    }
-    .card-title {
-        font-weight: bolder;
+        transform: translateY(-5px);
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
     }
     .event-image {
-        height: 200px;
+        height: 220px;
         object-fit: cover;
+    }
+    .event-body {
+        padding: 20px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    /* Badges */
+    .badge-custom {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-weight: bold;
+    }
+    
+    /* Empty Section */
+    .empty-section {
+        text-align: center;
+        padding: 50px 20px;
+        font-size: 1.2rem;
+        color: #555;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        margin-top: 20px;
+    }
+    .empty-section img {
+        width: 150px;
+        margin-bottom: 15px;
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container my-5">
+    <!-- Upcoming Events -->
     <h2 class="text-center mb-4"><i class="fas fa-calendar-alt"></i> Upcoming Events</h2>
     <div class="row">
-        {% for event in events %}
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card event-card h-100" data-toggle="tooltip" title="{{ event.description }}">
-                {% if event.event_image %}
-                <img src="{{ url_for('static', filename='event_images/' ~ event.event_image) }}" class="card-img-top event-image" alt="Event Image">
-                {% endif %}
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title"><strong>{{ event.name }}</strong></h5>
-                    <p class="event-date"><i class="fas fa-calendar-day"></i> <strong>Date:</strong> {{ event.date.strftime('%Y-%m-%d %H:%M') }}</p>
-                    <p class="event-type"><i class="fas fa-tag"></i> <strong>Event Type:</strong> {{ event.event_type }}</p>
-                    <p class="event-attendees"><i class="fas fa-users"></i> <strong>Attendees:</strong> {{ event.attendees|length }}/{{ event.max_attendees }}</p>
-                    <a href="{{ url_for('events.events_detail', event_id=event.id) }}" class="btn btn-primary mt-auto"><i class="fas fa-info-circle"></i> Read More And Register</a>
+        {% if upcoming_events %}
+            {% for event in upcoming_events %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card event-card h-100">
+                    {% if event.event_image %}
+                    <img src="{{ url_for('static', filename='event_images/' ~ event.event_image) }}" class="card-img-top event-image" alt="Event Image">
+                    {% endif %}
+                    <div class="event-body">
+                        <h5 class="card-title">{{ event.name }}</h5>
+                        <p class="event-date"><i class="fas fa-calendar-day"></i> <strong>Date:</strong> {{ event.date.strftime('%Y-%m-%d %H:%M') }}</p>
+                        <p class="event-type"><i class="fas fa-tag"></i> <strong>Type:</strong> {{ event.event_type }}</p>
+                        <p class="event-attendees"><i class="fas fa-users"></i> <strong>Attendees:</strong> {{ event.attendees|length }}/{{ event.max_attendees }}</p>
+
+                        {% if event.is_full() %}
+                            <span class="badge bg-danger badge-custom">Event Full</span>
+                        {% endif %}
+                        
+                        <a href="{{ url_for('events.events_detail', event_id=event.id) }}" class="btn btn-primary mt-auto">
+                            <i class="fas fa-info-circle"></i> Read More & Register
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-        {% endfor %}
+            {% endfor %}
+        {% else %}
+            <div class="empty-section">
+                <img src="{{ url_for('static', filename='uploads/no-event.jpg') }}" alt="No Events">
+                <p>No upcoming events at the moment. Stay tuned for updates!</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Passed Events -->
+    <h2 class="text-center mt-5 mb-4"><i class="fas fa-history"></i> Past Events</h2>
+    <div class="row">
+        {% if past_events %}
+            {% for event in past_events %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card event-card h-100 bg-light">
+                    {% if event.event_image %}
+                    <img src="{{ url_for('static', filename='event_images/' ~ event.event_image) }}" class="card-img-top event-image" alt="Event Image">
+                    {% endif %}
+                    <div class="event-body">
+                        <h5 class="card-title">{{ event.name }}</h5>
+                        <p class="event-date"><i class="fas fa-calendar-day"></i> <strong>Date:</strong> {{ event.date.strftime('%Y-%m-%d %H:%M') }}</p>
+                        <p class="event-type"><i class="fas fa-tag"></i> <strong>Type:</strong> {{ event.event_type }}</p>
+                        <span class="badge bg-secondary badge-custom">Event Passed</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-section">
+                <img src="{{ url_for('static', filename='images/no-past-events.svg') }}" alt="No Past Events">
+                <p>No past events available. Check back later to see previous activities.</p>
+            </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

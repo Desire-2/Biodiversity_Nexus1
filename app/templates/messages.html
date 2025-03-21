@@ -1,62 +1,97 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4 text-center text-primary"><i class="fas fa-envelope"></i> Messages</h2>
-    
-    <form method="POST" action="{{ url_for('messages.messages_view') }}" class="border p-4 rounded shadow bg-white">
-        {{ form.hidden_tag() }}
-        <div class="form-group mb-3">
-            {{ form.recipient.label(class="form-label") }}
-            {{ form.recipient(class="form-control") }}
+<div class="container mt-5 chat-page">
+  <h2 class="mb-4 text-center text-primary">
+    <i class="fas fa-envelope"></i> Messages
+  </h2>
+  
+  <!-- Chat Window -->
+  <div class="chat-window bg-white rounded shadow-sm p-3 mb-4">
+    {% for message in received_messages %}
+      <div class="chat-message received">
+        <div class="message-content">{{ message.content }}</div>
+        <div class="message-meta">
+          <small>{{ message.date_sent }} - From: {{ message.sender.username }}</small>
         </div>
-        <div class="form-group mb-3">
-            {{ form.content.label(class="form-label") }}
-            {{ form.content(class="form-control") }}
+      </div>
+    {% endfor %}
+    {% for message in sent_messages %}
+      <div class="chat-message sent">
+        <div class="message-content">{{ message.content }}</div>
+        <div class="message-meta">
+          <small>{{ message.date_sent }} - To: {{ message.recipient.username }}</small>
         </div>
-        <div class="form-group mb-3 text-center">
-            {{ form.submit(class="btn btn-primary btn-lg btn-block") }}
-        </div>
-    </form>
-    
-    <div class="mt-5">
-        <h3 class="mb-3 text-center text-success"><i class="fas fa-inbox"></i> Received Messages</h3>
-        <div class="card-deck">
-            {% for message in received_messages %}
-            <div class="card mb-4 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">{{ message.content }}</h5>
-                    <p class="card-text"><small class="text-muted">{{ message.date_sent }} - From: {{ message.sender.username }}</small></p>
-                </div>
-                <div class="card-footer text-center">
-                    <span class="badge bg-primary rounded-pill"><i class="fas fa-user"></i></span>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
+      </div>
+    {% endfor %}
+  </div>
+  
+  <!-- Message Input Form -->
+  <form method="POST" action="{{ url_for('messages.messages_view') }}" class="chat-input bg-white p-3 rounded shadow-sm">
+    {{ form.hidden_tag() }}
+    <!-- (Optional) Recipient Field if needed -->
+    <div class="form-group mb-2">
+      {{ form.recipient.label(class="form-label") }}
+      {{ form.recipient(class="form-control", placeholder="Recipient username") }}
     </div>
-
-    <div class="mt-5">
-        <h3 class="mb-3 text-center text-info"><i class="fas fa-paper-plane"></i> Sent Messages</h3>
-        <div class="card-deck">
-            {% for message in sent_messages %}
-            <div class="card mb-4 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">{{ message.content }}</h5>
-                    <p class="card-text"><small class="text-muted">{{ message.date_sent }} - To: {{ message.recipient.username }}</small></p>
-                </div>
-                <div class="card-footer text-center">
-                    <span class="badge bg-success rounded-pill"><i class="fas fa-user"></i></span>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
+    <div class="form-group mb-2">
+      {{ form.content.label(class="form-label") }}
+      {{ form.content(class="form-control", placeholder="Type your message...") }}
     </div>
+    <div class="form-group mb-0 text-right">
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
 </div>
 
 <style>
-    .card:hover {
-        transform: scale(1.05);
-        transition: transform 0.3s;
-    }
+  /* Overall Chat Page Layout */
+  .chat-page {
+    max-width: 600px;
+    margin: auto;
+  }
+  /* Chat Window Styling */
+  .chat-window {
+    max-height: 400px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+  }
+  /* Chat Bubble Styling */
+  .chat-message {
+    max-width: 70%;
+    padding: 10px 15px;
+    border-radius: 20px;
+    word-wrap: break-word;
+    position: relative;
+    font-size: 1rem;
+  }
+  .chat-message.received {
+    background-color: #e4e6eb;
+    align-self: flex-start;
+    border-top-left-radius: 0;
+  }
+  .chat-message.sent {
+    background-color: #dcf8c6;
+    align-self: flex-end;
+    border-top-right-radius: 0;
+  }
+  .message-meta {
+    font-size: 0.75rem;
+    color: #555;
+    margin-top: 5px;
+    text-align: right;
+  }
+  /* Input Form Styling */
+  .chat-input .form-control {
+    border-radius: 20px;
+    box-shadow: none;
+  }
+  .chat-input .form-group {
+    margin-bottom: 1rem;
+  }
 </style>
 {% endblock %}

@@ -92,3 +92,16 @@ class GalleryItemForm(FlaskForm):
     location = StringField('Location')
     date_taken = DateTimeField('Date Taken', format='%Y-%m-%d')
     submit = SubmitField('Add to Gallery')
+
+class PostForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    content = TextAreaField('Content', validators=[DataRequired()])
+    submit = SubmitField('Post')
+
+class ThreadForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    submit = SubmitField('Create Thread')
+
+class CommentForm(FlaskForm):
+    content = TextAreaField('Content', validators=[DataRequired()])
+    submit = SubmitField('Comment')
