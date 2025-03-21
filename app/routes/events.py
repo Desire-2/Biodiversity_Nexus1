@@ -334,23 +334,27 @@ def cancel_registration(id):
     return redirect(url_for('events.events_view'))
 
 
-@events.route('/event/delete/<int:event_id>', methods=['POST'])
+@events.route('/event/<int:event_id>/delete', methods=['POST'])
 @login_required
-@admin_required
 def delete_event(event_id):
     event = Event.query.get_or_404(event_id)
     try:
-        # Delete all related event attendance records first
-        EventAttendance.query.filter_by(event_id=event.id).delete()
+        # Check if the event has any attendees
+        attendees = EventAttendance.query.filter_by(event_id=event.id).all()
+        if attendees:
+            flash('Cannot delete event with registered attendees.', 'warning')
+            return redirect(url_for('events.events_view'))
+        
+        # Delete the event
         db.session.delete(event)
         db.session.commit()
+        
         flash('Event deleted successfully!', 'success')
     except Exception as e:
         db.session.rollback()
         logging.error(f"Error deleting event: {e}")
         flash('Failed to delete event. Please try again later.', 'danger')
     return redirect(url_for('events.events_view'))
-
 
 @events.route('/admin/events', methods=['GET'])
 @login_required
