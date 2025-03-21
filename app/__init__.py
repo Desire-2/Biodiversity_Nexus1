@@ -45,20 +45,6 @@ paypalrestsdk.configure({
     "client_secret": os.getenv("PAYPAL_CLIENT_SECRET")
 })
 
-# --- Firebase Admin SDK Integration ---
-import firebase_admin
-from firebase_admin import credentials, firestore
-
-firebase_cert_path = os.getenv("FIREBASE_CERT")
-if not firebase_cert_path:
-    raise ValueError("FIREBASE_CERT environment variable is not set.")
-
-# Initialize the Firebase Admin SDK with your service account key
-cred = credentials.Certificate(firebase_cert_path)
-firebase_admin.initialize_app(cred)
-# Create a Firestore client (you can also initialize other Firebase services here)
-firestore_db = firestore.client()
-# --- End Firebase Integration ---
 
 # Import User model for Flask-Login
 from app.models import User
