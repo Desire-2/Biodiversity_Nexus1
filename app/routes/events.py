@@ -278,20 +278,16 @@ def register_event(id):
 @admin_required
 def update_event(event_id):
     event = Event.query.get_or_404(event_id)
-    form = EventForm()
-    if form.validate_on_submit():
-        event.name = form.name.data
-        event.date = form.date.data
-        event.description = form.description.data
-        event.max_attendees = form.max_attendees.data
-        event.event_type = form.event_type.data
-        event.virtual_link = form.virtual_link.data
+    form = EventForm(obj=event)  # Prepopulate form with existing event data
 
-        # If a new image is provided, save and update it; otherwise, keep the existing image.
+    if form.validate_on_submit():
+        form.populate_obj(event)  # Efficiently update the event object
+
+        # Handle event image update
         if form.event_image.data:
             image_file = save_event_image(form.event_image.data)
             if image_file:
-                event.event_image = image_file
+                event.event_image = image_file  # Update image only if a new one is provided
 
         try:
             db.session.commit()
@@ -301,19 +297,12 @@ def update_event(event_id):
             db.session.rollback()
             logging.error(f"Error updating event: {e}")
             flash('Failed to update event. Please try again later.', 'danger')
-    elif request.method == 'GET':
-        form.name.data = event.name
-        form.date.data = event.date
-        form.description.data = event.description
-        form.max_attendees.data = event.max_attendees
-        form.event_type.data = event.event_type
-        form.virtual_link.data = event.virtual_link
-        # File fields should not be pre-populated.
 
     return render_template('create_event.html',
                            title='Update Event',
                            form=form,
                            legend='Update Event')
+
 
 
 @events.route('/event/cancel_registration/<int:id>', methods=['POST'])
@@ -355,6 +344,7 @@ def delete_event(event_id):
         logging.error(f"Error deleting event: {e}")
         flash('Failed to delete event. Please try again later.', 'danger')
     return redirect(url_for('events.events_view'))
+
 
 @events.route('/admin/events', methods=['GET'])
 @login_required
