@@ -8,6 +8,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from functools import wraps
 from PIL import Image
+from sqlalchemy.exc import IntegrityError
+import traceback
 
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_required, current_user
@@ -278,16 +280,22 @@ def register_event(id):
         else:
             flash('Registration successful, but confirmation email failed to send.', 'warning')
             
-    except IntegrityError:
+    except IntegrityError as e:
         db.session.rollback()
-        flash('Registration failed due to database error.', 'danger')
-        logging.error(f"Integrity error during registration for event {id}")
-        
+        logging.error(f"Integrity Error: {str(e.orig)}")
+        if "confirmation_code" in str(e.orig):
+            flash('Confirmation code collision - please retry', 'danger')
+        elif "_user_event_uc" in str(e.orig):
+            flash('Already registered for this event', 'warning')
+        else:
+            flash('Registration failed due to database conflict', 'danger')
+
     except Exception as e:
         db.session.rollback()
+        logging.error(f"Error Type: {type(e)}")
+        logging.error(f"Error Message: {str(e)}")
+        logging.error(traceback.format_exc())
         flash('Failed to complete registration. Please try again.', 'danger')
-        logging.error(f"Error in register_event: {str(e)}")
-        logging.exception(e)
 
     return redirect(url_for('events.events_view'))
 
