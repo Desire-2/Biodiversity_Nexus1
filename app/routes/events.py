@@ -122,7 +122,7 @@ def create_event():
             db.session.add(event)
             db.session.commit()
             flash('Event created successfully!', 'success')
-            return redirect(url_for('events.events_view'))
+            return redirect(url_for('events.admin_events_view'))
         except Exception as e:
             db.session.rollback()
             logging.error(f"Error creating event: {e}")
@@ -343,7 +343,7 @@ def delete_event(event_id):
         db.session.rollback()
         logging.error(f"Error deleting event: {e}")
         flash('Failed to delete event. Please try again later.', 'danger')
-    return redirect(url_for('events.events_view'))
+    return redirect(url_for('events.admin_events_view'))
 
 
 @events.route('/admin/events', methods=['GET'])
