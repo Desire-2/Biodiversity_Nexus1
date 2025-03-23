@@ -2,200 +2,376 @@
 
 {% block styles %}
 <style>
-    /* Background with parallax effect */
+    /* Enhanced Hero Banner with Overlay */
     .hero-banner {
-        background: url("{{ url_for('static', filename='event_images/' ~ event.event_image) }}") center/cover no-repeat;
-        height: 400px;
+        background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url("{{ url_for('static', filename='event_images/' ~ event.event_image) }}");
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+        min-height: 60vh;
         position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
         text-align: center;
         color: #fff;
-        font-size: 2rem;
-        font-weight: bold;
-        text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
         background-attachment: fixed;
+        padding: 20px;
     }
 
-    /* Event container */
+    @media (max-width: 768px) {
+        .hero-banner {
+            background-attachment: scroll;
+            font-size: 2rem;
+            min-height: 50vh;
+        }
+    }
+
+    /* Enhanced Event Container */
     .event-container {
-        max-width: 850px;
-        margin: auto;
-        padding: 30px;
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 20px;
     }
 
-    /* Glassmorphic event card */
+    /* Improved Glassmorphic Card */
     .event-card {
-        background: rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(15px);
-        padding: 30px;
-        border-radius: 15px;
-        box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+        margin-top: -100px;
+        position: relative;
+        z-index: 1;
     }
 
-    .event-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.3);
+    @media (max-width: 768px) {
+        .event-card {
+            margin-top: -50px;
+            padding: 1.5rem;
+        }
     }
 
-    /* Stylish Typography */
-    h2, h3 {
-        font-weight: bold;
-        color: #333;
-        text-align: center;
+    /* Typography Hierarchy */
+    .event-card h2 {
+        font-size: 2.2rem;
+        margin-bottom: 1.5rem;
+        color: #2a2a2a;
+        position: relative;
+        padding-bottom: 0.5rem;
     }
 
-    /* Countdown Timer */
+    .event-card h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 3px;
+        background: #ff4d6d;
+    }
+
+    /* Enhanced Countdown Timer */
     .countdown {
-        font-size: 1.5rem;
-        text-align: center;
-        font-weight: bold;
+        font-size: 1.6rem;
+        font-weight: 600;
         color: #ff4d6d;
+        padding: 1rem;
+        background: rgba(255,77,109,0.1);
+        border-radius: 10px;
+        margin: 1.5rem 0;
     }
 
-    /* Animated Register Button */
+    /* Improved Event Details */
+    .event-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .event-detail-item {
+        text-align: center;
+        padding: 1.2rem;
+        background: rgba(0,0,0,0.03);
+        border-radius: 10px;
+    }
+
+    .event-detail-item i {
+        font-size: 1.8rem;
+        color: #ff4d6d;
+        margin-bottom: 0.8rem;
+    }
+
+    /* Enhanced Register Button */
     .btn-register {
         background: linear-gradient(135deg, #ff4d6d, #ff6a88);
         color: #fff;
-        font-size: 1.2rem;
-        padding: 12px 30px;
-        border-radius: 25px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        display: inline-block;
-        text-align: center;
+        padding: 1rem 2.5rem;
+        border-radius: 30px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
     }
 
     .btn-register:hover {
-        transform: scale(1.05);
-        box-shadow: 0 5px 15px rgba(255, 77, 109, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(255,77,109,0.3);
     }
 
-    /* Badge Styling */
+    /* Enhanced Status Badges */
     .badge-status {
         font-size: 1rem;
-        padding: 10px 20px;
-        border-radius: 20px;
-        display: inline-block;
-        text-align: center;
+        padding: 0.8rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
     }
 
-    .badge-passed {
-        background: #bbb;
-    }
+    .badge-passed { background: #6c757d; color: #fff; }
+    .badge-full { background: #dc3545; color: #fff; }
+    .badge-registered { background: #28a745; color: #fff; }
 
-    .badge-full {
-        background: #d9534f;
-    }
-
-    .badge-registered {
-        background: #5cb85c;
-    }
-
-    /* Floating Social Media Buttons */
+    /* Social Share Buttons */
     .social-share {
-        text-align: center;
-        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 2rem;
     }
 
     .social-share a {
-        display: inline-block;
-        margin: 5px;
-        font-size: 1.5rem;
-        padding: 10px;
+        width: 45px;
+        height: 45px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         border-radius: 50%;
-        transition: transform 0.3s ease;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        font-size: 1.2rem;
     }
 
-    .social-share a:hover {
-        transform: scale(1.1);
+    /* Event Description Styling */
+    .event-description {
+        line-height: 1.8;
+        color: #444;
+        font-size: 1.1rem;
+        margin: 2rem 0;
     }
 
-    .facebook { background: #1877F2; color: #fff; }
-    .twitter { background: #1DA1F2; color: #fff; }
-    .whatsapp { background: #25D366; color: #fff; }
-
-    /* Light/Dark Mode */
-    .dark-mode {
-        background: #222;
-        color: #fff;
+    .event-description img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        margin: 1rem 0;
     }
+    
 
-    .dark-mode .event-card {
-        background: rgba(255, 255, 255, 0.2);
-        color: #fff;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .event-container {
-            padding: 20px;
+    /* Responsive Fixes */
+    @media (max-width: 576px) {
+        .event-card h2 {
+            font-size: 1.8rem;
+        }
+        
+        .countdown {
+            font-size: 1.2rem;
         }
     }
+/* Event Main Image Styling */
+.event-image-container {
+    max-width: 900px;
+    margin: -80px auto 2rem auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.event-main-image {
+    width: 100%;
+    height: auto;
+    max-height: 500px;
+    object-fit: cover;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+    transform: translateY(-20px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.event-main-image:hover {
+    transform: translateY(-25px);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+}
+
+@media (max-width: 768px) {
+    .event-image-container {
+        margin: -40px auto 1.5rem auto;
+        padding: 0 15px;
+    }
+    
+    .event-main-image {
+        border-radius: 15px;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
+}
+
+/* Adjust event card positioning */
+.event-card {
+    margin-top: 0;
+    position: relative;
+    z-index: 3;
+}
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="hero-banner">
-    {{ event.name }}
+    <h1>{{ event.name }}</h1>
 </div>
 
-<div class="container event-container">
+{% if event.event_image %}
+<div class="event-image-container">
+    <img src="{{ url_for('static', filename='event_images/' ~ event.event_image) }}" class="event-main-image" alt="{{ event.name }}">
+</div>
+{% endif %}
+
+<div class="event-container">
     <div class="event-card">
         <h2>{{ event.name }}</h2>
-        {% if event.event_image %}
-        <img src="{{ url_for('static', filename='event_images/' ~ event.event_image) }}" class="card-img-top event-image" alt="Event Image">
-        {% endif %}
-        <p class="text-center"><i class="fas fa-calendar-day"></i> <strong>Date:</strong> {{ event.date.strftime('%Y-%m-%d %H:%M') }}</p>
-        <p class="text-center countdown" id="countdown"></p>
-        <p><i class="fas fa-tag"></i> <strong>Event Type:</strong> {{ event.event_type }}</p>
-        <p><i class="fas fa-users"></i> <strong>Attendees:</strong> <span id="attendee-count">{{ event.attendees|length }}</span>/{{ event.max_attendees }}</p>
-        <p class="event-description">{{ event.description | safe }}</p>
+        
+        <div class="event-details">
+            <div class="event-detail-item">
+                <i class="fas fa-calendar-day"></i>
+                <div>
+                    <strong>Date & Time</strong><br>
+                    {{ event.date.strftime('%B %d, %Y @ %H:%M') }}
+                </div>
+            </div>
+            
+            <div class="event-detail-item">
+                <i class="fas fa-users"></i>
+                <div>
+                    <strong>Attendees</strong><br>
+                    <span id="attendee-count">{{ event.attendees|length }}</span>/{{ event.max_attendees }}
+                </div>
+            </div>
+            
+            <div class="event-detail-item">
+                <i class="fas fa-tag"></i>
+                <div>
+                    <strong>Event Type</strong><br>
+                    {{ event.event_type }}
+                </div>
+            </div>
+        </div>
 
-        <!-- Event Status -->
-        <div class="text-center mt-3">
+        <div class="countdown" id="countdown"></div>
+
+        <div class="event-description">
+            {{ event.description | safe }}
+        </div>
+
+        <!-- Event Status Section -->
+        <div class="text-center mt-4">
             {% if event.has_passed() %}
-                <span class="badge badge-status badge-passed">Event Passed</span>
+                <div class="badge-status badge-passed">Event Ended</div>
             {% elif event.is_full() %}
-                <span class="badge badge-status badge-full">Event Full</span>
+                <div class="badge-status badge-full">Fully Booked</div>
             {% else %}
                 {% if current_user.is_authenticated %}
                     {% set attendance = EventAttendance.query.filter_by(user_id=current_user.id, event_id=event.id).first() %}
                     {% if attendance %}
-                        <span class="badge badge-status badge-registered">Already Registered</span>
+                        <div class="badge-status badge-registered">Registered ✓</div>
                     {% else %}
-                        <a href="{{ url_for('events.register_event', id=event.id) }}" class="btn btn-register mt-3" id="register-button">Register Now</a>
+                        <a href="{{ url_for('events.register_event', id=event.id) }}" 
+                           class="btn-register"
+                           id="register-button">
+                            <i class="fas fa-ticket-alt"></i>
+                            Register Now
+                        </a>
                     {% endif %}
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn-register">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login to Register
+                    </a>
                 {% endif %}
             {% endif %}
         </div>
 
-        <!-- Social Share -->
+        <!-- Social Sharing -->
         <div class="social-share">
-            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}" target="_blank" class="facebook"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://twitter.com/intent/tweet?url={{ request.url }}&text=Check out this event!" target="_blank" class="twitter"><i class="fab fa-twitter"></i></a>
-            <a href="https://api.whatsapp.com/send?text=Check out this event: {{ request.url }}" target="_blank" class="whatsapp"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}" 
+               class="facebook"
+               target="_blank"
+               aria-label="Share on Facebook">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="https://twitter.com/intent/tweet?url={{ request.url }}&text=Check out this event: {{ event.name }}" 
+               class="twitter"
+               target="_blank"
+               aria-label="Share on Twitter">
+                <i class="fab fa-twitter"></i>
+            </a>
+            <a href="https://api.whatsapp.com/send?text=Check out this event: {{ event.name }} - {{ request.url }}" 
+               class="whatsapp"
+               target="_blank"
+               aria-label="Share on WhatsApp">
+                <i class="fab fa-whatsapp"></i>
+            </a>
         </div>
     </div>
 </div>
 
 <script>
-    // Countdown Timer
+    // Enhanced Countdown Timer
     function updateCountdown() {
-        let eventDate = new Date("{{ event.date.strftime('%Y-%m-%dT%H:%M:%S') }}").getTime();
-        let now = new Date().getTime();
-        let timeLeft = eventDate - now;
+        const eventDate = new Date("{{ event.date.strftime('%Y-%m-%dT%H:%M:%S') }}").getTime();
+        const now = new Date().getTime();
+        const timeLeft = eventDate - now;
 
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+        const countdown = document.getElementById('countdown');
+        
         if (timeLeft > 0) {
-            let days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-            let hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            document.getElementById('countdown').innerHTML = `Starts in: ${days} days, ${hours} hours`;
+            countdown.innerHTML = `
+                <div class="countdown-timer">
+                    <span>${days}d</span> : 
+                    <span>${hours}h</span> : 
+                    <span>${minutes}m</span> : 
+                    <span>${seconds}s</span>
+                </div>
+            `;
         } else {
-            document.getElementById('countdown').innerHTML = "Event Started!";
+            countdown.innerHTML = "Event Started!";
+            countdown.style.backgroundColor = "rgba(40,167,69,0.1)";
+            countdown.style.color = "#28a745";
         }
     }
 
+    // Initial call and interval
+    updateCountdown();
     setInterval(updateCountdown, 1000);
+
+    // Dynamic background position for hero banner
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        document.querySelector('.hero-banner').style.backgroundPositionY = `${scrolled * 0.5}px`;
+    });
 </script>
 {% endblock %}
