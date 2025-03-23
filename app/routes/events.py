@@ -244,7 +244,10 @@ def send_confirmation_email(event, user, confirmation_code):
 @login_required
 def register_event(id):
     event = Event.query.get_or_404(id)
-    existing_registration = EventAttendance.query.filter_by(user_id=current_user.id, event_id=id).first()
+    existing_registration = EventAttendance.query.filter_by(
+        user_id=current_user.id, 
+        event_id=id
+    ).first()
 
     if existing_registration:
         flash('You are already registered for this event.', 'warning')
@@ -254,21 +257,37 @@ def register_event(id):
         flash('Event is already full.', 'warning')
         return redirect(url_for('events.events_view'))
 
-    confirmation_code = generate_confirmation_code(event, current_user)
-    if send_confirmation_email(event, current_user, confirmation_code):
-        try:
-            attendance = EventAttendance(user_id=current_user.id,
-                                         event_id=event.id,
-                                         confirmation_code=confirmation_code)
-            db.session.add(attendance)
-            db.session.commit()
-            flash('Registered for the event successfully. Confirmation email sent.', 'success')
-        except Exception as e:
-            db.session.rollback()
-            logging.error(f"Failed to register for the event: {e}")
-            flash('Failed to register for the event. Please try again later.', 'danger')
-    else:
-        flash('Failed to send confirmation email. Please try to register again later.', 'danger')
+    try:
+        # Generate confirmation code first
+        confirmation_code = generate_confirmation_code(event, current_user)
+        
+        # Create attendance record
+        attendance = EventAttendance(
+            user_id=current_user.id,
+            event_id=event.id,
+            confirmation_code=confirmation_code
+        )
+        
+        # Add to session and commit first
+        db.session.add(attendance)
+        db.session.commit()
+        
+        # Only send email AFTER successful commit
+        if send_confirmation_email(event, current_user, confirmation_code):
+            flash('Registered successfully! Confirmation email sent.', 'success')
+        else:
+            flash('Registration successful, but confirmation email failed to send.', 'warning')
+            
+    except IntegrityError:
+        db.session.rollback()
+        flash('Registration failed due to database error.', 'danger')
+        logging.error(f"Integrity error during registration for event {id}")
+        
+    except Exception as e:
+        db.session.rollback()
+        flash('Failed to complete registration. Please try again.', 'danger')
+        logging.error(f"Error in register_event: {str(e)}")
+        logging.exception(e)
 
     return redirect(url_for('events.events_view'))
 
