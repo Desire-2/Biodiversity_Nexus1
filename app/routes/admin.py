@@ -61,6 +61,7 @@ def edit_user(id):
         user.username = form.username.data
         user.email = form.email.data
         user.role = form.role.data
+        user.password = form.password.data
         db.session.commit()
         flash('User updated successfully!', 'success')
         return redirect(url_for('admin.manage_users'))
