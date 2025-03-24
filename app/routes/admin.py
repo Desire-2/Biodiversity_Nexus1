@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from app.models import User, Event, GalleryItem, ActivityLog
-from app import db
+from app import db, bcrypt
 from app.forms import EditUserForm
 
 admin = Blueprint('admin', __name__)
@@ -61,11 +61,15 @@ def edit_user(id):
         user.username = form.username.data
         user.email = form.email.data
         user.role = form.role.data
-        user.password = form.password.data
+        if form.password.data:
+            hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            user.password = hashed_password
         db.session.commit()
         flash('User updated successfully!', 'success')
         return redirect(url_for('admin.manage_users'))
     return render_template('edit_user.html', form=form, user=user)
+
+
 
 @admin.route('/admin/delete_user/<int:id>', methods=['POST'])
 @login_required
