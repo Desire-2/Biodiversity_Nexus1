@@ -11,4 +11,6 @@ venv.back/
 add_admin.py
 db_create.py
 email_test.py
+# Ignore service account credentials file
 gold-apparatus-431223-h8-3ed9ba4fed58.json
+biodiversity-nexus-454612-7df7ae020a8f.json
