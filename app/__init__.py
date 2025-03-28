@@ -8,6 +8,7 @@ from flask_mail import Mail
 from dotenv import load_dotenv
 import os
 from werkzeug.utils import secure_filename
+from flask_wtf.csrf import CSRFProtect
 
 # Load environment variables from .env file
 load_dotenv()
@@ -15,6 +16,7 @@ load_dotenv()
 
 
 app = Flask(__name__)
+
 
 # Set up configurations using environment variables
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
@@ -33,6 +35,9 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 migrate = Migrate(app, db)
 mail = Mail(app)
+
+csrf = CSRFProtect()
+csrf.init_app(app)
 
 # Flask-Login configurations
 login_manager.login_view = 'auth.login'
