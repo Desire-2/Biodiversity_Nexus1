@@ -3,6 +3,9 @@ import uuid
 import smtplib
 import secrets
 import logging
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseUpload
 from io import BytesIO
 from datetime import datetime
 from email.mime.multipart import MIMEMultipart
@@ -11,6 +14,9 @@ from functools import wraps
 from PIL import Image
 from sqlalchemy.exc import IntegrityError
 import traceback
+import random
+import string
+
 import random
 import string
 
@@ -144,17 +150,25 @@ def generate_confirmation_code(event, user):
     """Generates a unique confirmation code starting with BIO-NEXUS followed by a unique 10-character code."""
     unique_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
     return f"BIO-NEXUS-{unique_code}"
+    """Generates a unique confirmation code starting with BIO-NEXUS followed by a unique 10-character code."""
+    unique_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
+    return f"BIO-NEXUS-{unique_code}"
 
 def build_email_body(event, user, confirmation_code):
     """Builds the HTML body for the confirmation email."""
     link_message = (f'Here is your link to join the virtual event: '
                     f'<a href="{event.virtual_link}" style="color:#4CAF50; text-decoration:none;">{event.virtual_link}</a>'
                     if event.event_type.lower() == 'virtual'
+                    f'<a href="{event.virtual_link}" style="color:#4CAF50; text-decoration:none;">{event.virtual_link}</a>'
+                    if event.event_type.lower() == 'virtual'
                     else "Please bring this confirmation to the event for entry.")
     return f'''
 <!DOCTYPE html>
 <html lang="en">
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <title>Event Registration Confirmation</title>
     <meta charset="UTF-8">
     <title>Event Registration Confirmation</title>
     <style>
@@ -164,21 +178,49 @@ def build_email_body(event, user, confirmation_code):
             padding: 0;
             font-family: 'Arial', sans-serif;
         }}
+        /* Reset some basic styles */
+        body, p, h1, h2, h3, a {{
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }}
         body {{
             background-color: #f4f4f4;
+            background-color: #f4f4f4;
             color: #333;
+            line-height: 1.6;
             line-height: 1.6;
         }}
         .container {{
             max-width: 600px;
             margin: 30px auto;
             background-color: #ffffff;
+            margin: 30px auto;
+            background-color: #ffffff;
             border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }}
         .header {{
+            background-color: #4CAF50;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+        }}
+        .header h1 {{
+            font-size: 28px;
+            letter-spacing: 1px;
+        }}
+        .content {{
+            padding: 20px;
+        }}
+        .content h2 {{
+            font-size: 22px;
+            margin-bottom: 10px;
             background-color: #4CAF50;
             color: #ffffff;
             padding: 20px;
@@ -200,7 +242,15 @@ def build_email_body(event, user, confirmation_code):
             margin-bottom: 15px;
             font-size: 16px;
         }}
+        .content p {{
+            margin-bottom: 15px;
+            font-size: 16px;
+        }}
         .event-details {{
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 15px;
             background-color: #f9f9f9;
             border: 1px solid #eee;
             border-radius: 5px;
@@ -214,7 +264,17 @@ def build_email_body(event, user, confirmation_code):
             font-weight: bold;
             color: #FF5722;
         }}
+        .event-details p {{
+            margin: 8px 0;
+        }}
+        .confirmation-code {{
+            font-weight: bold;
+            color: #FF5722;
+        }}
         .footer {{
+            background-color: #f4f4f4;
+            padding: 15px;
+            text-align: center;
             background-color: #f4f4f4;
             padding: 15px;
             text-align: center;
@@ -228,6 +288,27 @@ def build_email_body(event, user, confirmation_code):
         .social-icons {{
             margin-top: 10px;
         }}
+        .footer a {{
+            color: #4CAF50;
+            text-decoration: none;
+        }}
+        .social-icons {{
+            margin-top: 10px;
+        }}
+        .social-icons a {{
+            display: inline-block;
+            margin: 0 5px;
+            transition: transform 0.3s ease;
+        }}
+        .social-icons a:hover {{
+            transform: scale(1.1);
+        }}
+        /* Responsive for mobile */
+        @media only screen and (max-width: 600px) {{
+            .container {{
+                width: 90%;
+                margin: 20px auto;
+            }}
         .social-icons a {{
             display: inline-block;
             margin: 0 5px;
@@ -264,12 +345,36 @@ def build_email_body(event, user, confirmation_code):
             </div>
             <p>We look forward to seeing you at the event!</p>
             <p>Best Regards,<br>The Events Team</p>
+        <div class="header">
+            <h1>Registration Confirmed!</h1>
+        </div>
+        <div class="content">
+            <p>Dear {user.username},</p>
+            <p>Thank you for registering for the event <strong>{event.name}</strong>. We are excited to have you join us!</p>
+            <div class="event-details">
+                <h2>Event Details</h2>
+                <p><strong>Event Name:</strong> {event.name}</p>
+                <p><strong>Date & Time:</strong> {event.date}</p>
+                <p><strong>Description:</strong> {event.description}</p>
+                <p><strong>Event Type:</strong> {event.event_type}</p>
+                <p><strong>Confirmation Code:</strong> <span class="confirmation-code">{confirmation_code}</span></p>
+                <p>{link_message}</p>
+            </div>
+            <p>We look forward to seeing you at the event!</p>
+            <p>Best Regards,<br>The Events Team</p>
         </div>
         <div class="footer">
             <p>You received this email because you registered for an event with us.</p>
             <p>Contact us: <a href="mailto:biodiversitynexus@yahoo.com">biodiversitynexus@yahoo.com</a></p>
             <p>Visit our website: <a href="http://biodiversitynexus.me/">www.biodiversitynexus.me</a></p>
+            <p>You received this email because you registered for an event with us.</p>
+            <p>Contact us: <a href="mailto:biodiversitynexus@yahoo.com">biodiversitynexus@yahoo.com</a></p>
+            <p>Visit our website: <a href="http://biodiversitynexus.me/">www.biodiversitynexus.me</a></p>
             <div class="social-icons">
+                <a href="https://www.facebook.com/profile.php?id=61563059986794" target="_blank"><img src="https://img.icons8.com/color/48/000000/facebook.png" alt="Facebook" /></a>
+                <a href="https://x.com/Biod_Nexus" target="_blank"><img src="https://img.icons8.com/color/48/000000/twitter.png" alt="Twitter" /></a>
+                <a href="https://www.instagram.com/biodiversitynexus/" target="_blank"><img src="https://img.icons8.com/color/48/000000/instagram-new.png" alt="Instagram" /></a>
+                <a href="https://www.linkedin.com/company/biodiversity-nexus/" target="_blank"><img src="https://img.icons8.com/color/48/000000/linkedin.png" alt="LinkedIn" /></a>\n 
                 <a href="https://www.facebook.com/profile.php?id=61563059986794" target="_blank"><img src="https://img.icons8.com/color/48/000000/facebook.png" alt="Facebook" /></a>
                 <a href="https://x.com/Biod_Nexus" target="_blank"><img src="https://img.icons8.com/color/48/000000/twitter.png" alt="Twitter" /></a>
                 <a href="https://www.instagram.com/biodiversitynexus/" target="_blank"><img src="https://img.icons8.com/color/48/000000/instagram-new.png" alt="Instagram" /></a>
@@ -306,6 +411,27 @@ def send_confirmation_email(event, user, confirmation_code):
             if attempt == max_retries - 1:
                 return False
 
+@events.route('/event/resend_confirmation/<int:id>', methods=['POST'])
+@login_required
+def resend_confirmation_email(id):
+    """Resends the confirmation email for a specific event."""
+    attendance = EventAttendance.query.filter_by(user_id=current_user.id, event_id=id).first()
+    if not attendance:
+        flash('You are not registered for this event.', 'warning')
+        return redirect(url_for('events.events_view'))
+
+    event = Event.query.get_or_404(id)
+    try:
+        # Resend the confirmation email
+        if send_confirmation_email(event, current_user, attendance.confirmation_code):
+            flash('Confirmation email resent successfully!', 'success')
+        else:
+            flash('Failed to resend confirmation email. Please try again later.', 'danger')
+    except Exception as e:
+        logging.error(f"Error resending confirmation email: {e}")
+        flash('An error occurred while resending the confirmation email.', 'danger')
+
+    return redirect(url_for('events.events_detail', event_id=id))
 
 @events.route('/event/register/<int:id>', methods=['GET', 'POST'])
 @login_required
