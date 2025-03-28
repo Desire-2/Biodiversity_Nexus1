@@ -118,9 +118,9 @@ def events_detail(event_id):
 def create_event():
     form = EventForm()
     if form.validate_on_submit():
-        image_file = None
+        drive_link = None
         if form.event_image.data:
-            image_file = save_event_image(form.event_image.data)
+            image_file  = save_event_image(form.event_image.data)
 
         event = Event(
             name=form.name.data,
@@ -129,7 +129,7 @@ def create_event():
             max_attendees=form.max_attendees.data,
             event_type=form.event_type.data,
             virtual_link=form.virtual_link.data,
-            event_image=image_file
+            image_file =drive_link  # Storing the Google Drive link
         )
         try:
             db.session.add(event)
