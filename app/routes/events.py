@@ -376,23 +376,24 @@ def send_confirmation_email(event, user, confirmation_code):
     for attempt in range(max_retries):
         try:
             msg = MIMEMultipart()
-            msg['From'] = os.getenv("MAIL_USERNAME")
+            msg['From'] = "Biodiversity Nexus <biodiversitynexus@yahoo.com>"
             msg['To'] = user.email
             msg['Subject'] = 'Event Registration Confirmation'
-
+            
             body = build_email_body(event, user, confirmation_code)
             msg.attach(MIMEText(body, 'html', 'utf-8'))
-
+            
             server = smtplib.SMTP(os.getenv("MAIL_SERVER"), int(os.getenv("MAIL_PORT")))
             server.starttls()
             server.login(os.getenv("MAIL_USERNAME"), os.getenv("MAIL_PASSWORD"))
-            server.sendmail(msg['From'], msg['To'], msg.as_bytes())
+            server.sendmail(msg['From'], msg['To'], msg.as_string())
             server.quit()
             return True
         except (smtplib.SMTPServerDisconnected, smtplib.SMTPException) as e:
             logging.error(f"Failed to send confirmation email (attempt {attempt + 1}/{max_retries}): {e}")
             if attempt == max_retries - 1:
                 return False
+
 
 @events.route('/event/resend_confirmation/<int:id>', methods=['POST'])
 @login_required
