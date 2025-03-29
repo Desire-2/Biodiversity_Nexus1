@@ -350,14 +350,7 @@ def build_email_body(event, user, confirmation_code):
             <p>You received this email because you registered for an event with us.</p>
             <p>Contact us: <a href="mailto:biodiversitynexus@yahoo.com">biodiversitynexus@yahoo.com</a></p>
             <p>Visit our website: <a href="http://biodiversitynexus.me/">www.biodiversitynexus.me</a></p>
-            <p>You received this email because you registered for an event with us.</p>
-            <p>Contact us: <a href="mailto:biodiversitynexus@yahoo.com">biodiversitynexus@yahoo.com</a></p>
-            <p>Visit our website: <a href="http://biodiversitynexus.me/">www.biodiversitynexus.me</a></p>
             <div class="social-icons">
-                <a href="https://www.facebook.com/profile.php?id=61563059986794" target="_blank"><img src="https://img.icons8.com/color/48/000000/facebook.png" alt="Facebook" /></a>
-                <a href="https://x.com/Biod_Nexus" target="_blank"><img src="https://img.icons8.com/color/48/000000/twitter.png" alt="Twitter" /></a>
-                <a href="https://www.instagram.com/biodiversitynexus/" target="_blank"><img src="https://img.icons8.com/color/48/000000/instagram-new.png" alt="Instagram" /></a>
-                <a href="https://www.linkedin.com/company/biodiversity-nexus/" target="_blank"><img src="https://img.icons8.com/color/48/000000/linkedin.png" alt="LinkedIn" /></a>\n 
                 <a href="https://www.facebook.com/profile.php?id=61563059986794" target="_blank"><img src="https://img.icons8.com/color/48/000000/facebook.png" alt="Facebook" /></a>
                 <a href="https://x.com/Biod_Nexus" target="_blank"><img src="https://img.icons8.com/color/48/000000/twitter.png" alt="Twitter" /></a>
                 <a href="https://www.instagram.com/biodiversitynexus/" target="_blank"><img src="https://img.icons8.com/color/48/000000/instagram-new.png" alt="Instagram" /></a>
