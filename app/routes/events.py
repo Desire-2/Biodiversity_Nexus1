@@ -345,23 +345,6 @@ def build_email_body(event, user, confirmation_code):
             </div>
             <p>We look forward to seeing you at the event!</p>
             <p>Best Regards,<br>The Events Team</p>
-        <div class="header">
-            <h1>Registration Confirmed!</h1>
-        </div>
-        <div class="content">
-            <p>Dear {user.username},</p>
-            <p>Thank you for registering for the event <strong>{event.name}</strong>. We are excited to have you join us!</p>
-            <div class="event-details">
-                <h2>Event Details</h2>
-                <p><strong>Event Name:</strong> {event.name}</p>
-                <p><strong>Date & Time:</strong> {event.date}</p>
-                <p><strong>Description:</strong> {event.description}</p>
-                <p><strong>Event Type:</strong> {event.event_type}</p>
-                <p><strong>Confirmation Code:</strong> <span class="confirmation-code">{confirmation_code}</span></p>
-                <p>{link_message}</p>
-            </div>
-            <p>We look forward to seeing you at the event!</p>
-            <p>Best Regards,<br>The Events Team</p>
         </div>
         <div class="footer">
             <p>You received this email because you registered for an event with us.</p>
