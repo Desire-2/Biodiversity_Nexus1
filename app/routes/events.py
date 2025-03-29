@@ -157,11 +157,9 @@ def generate_confirmation_code(event, user):
 def build_email_body(event, user, confirmation_code):
     """Builds the HTML body for the confirmation email."""
     link_message = (f'Here is your link to join the virtual event: '
-                    f'Here is your link to join the virtual event: '
                     f'<a href="{event.virtual_link}" style="color:#4CAF50; text-decoration:none;">{event.virtual_link}</a>'
                     if event.event_type.lower() == 'virtual'
-                    else "Please bring this confirmation to the event for entry."
-                   )
+                    else "Please bring this confirmation to the event for entry.")
     return f'''
 <!DOCTYPE html>
 <html lang="en">
@@ -386,8 +384,6 @@ def send_confirmation_email(event, user, confirmation_code):
             logging.error(f"Failed to send confirmation email (attempt {attempt + 1}/{max_retries}): {e}")
             if attempt == max_retries - 1:
                 return False
-
-
 @events.route('/event/resend_confirmation/<int:id>', methods=['POST'])
 @login_required
 def resend_confirmation_email(id):
