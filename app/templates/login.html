@@ -132,5 +132,60 @@
   button.btn-primary:hover {
     background: #219150;
   }
+
+  /* Media Queries for Responsive Design */
+  @media (max-width: 768px) {
+    .login-page {
+      padding: 1rem;
+    }
+    
+    .login-card .card-header h1 {
+      font-size: 1.5rem;
+    }
+    
+    .form-control {
+      font-size: 14px;
+      padding: 0.75rem;
+    }
+    
+    .input-group-text {
+      font-size: 1rem;
+    }
+    
+    .btn-primary {
+      font-size: 1rem;
+      padding: 0.5rem 1rem;
+    }
+    
+    .card-body {
+      padding: 1.5rem !important;
+    }
+    
+    .login-card {
+      margin: 0 15px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .login-card .card-header h1 {
+      font-size: 1.3rem;
+    }
+    
+    .form-control {
+      font-size: 13px;
+    }
+    
+    .btn-primary {
+      font-size: 0.9rem;
+    }
+    
+    .card-footer p {
+      font-size: 0.9rem;
+    }
+    
+    .text-decoration-none {
+      font-size: 0.85rem;
+    }
+  }
 </style>
 {% endblock %}
