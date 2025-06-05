@@ -1,4 +1,4 @@
-from flask import Flask, flash
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -7,12 +7,10 @@ import paypalrestsdk
 from flask_mail import Mail
 from dotenv import load_dotenv
 import os
-from werkzeug.utils import secure_filename
+import datetime
 
 # Load environment variables from .env file
 load_dotenv()
-
-
 
 app = Flask(__name__)
 
@@ -45,9 +43,18 @@ paypalrestsdk.configure({
     "client_secret": os.getenv("PAYPAL_CLIENT_SECRET")
 })
 
-
 # Import User model for Flask-Login
 from app.models import User
+
+@app.template_filter('time_ago')
+def time_ago(dt):
+    if not dt:
+        return ''
+    now = datetime.datetime.utcnow()
+    diff = now - dt
+    secs = diff.total_seconds()
+    mins = secs / 60
+    hrs  = mins / 60
 
 # Flask-Login user loader
 @login_manager.user_loader
@@ -60,3 +67,7 @@ register_blueprints(app)
 
 # Import models to ensure they are registered with SQLAlchemy
 from app import models
+
+# Create database tables within application context
+with app.app_context():
+    db.create_all()

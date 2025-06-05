@@ -1,0 +1,547 @@
+{% extends '_macros.html' %}
+
+{% block styles %}
+<style>
+    :root {
+        --primary: #2e8b57;
+        --primary-light: #3cb371;
+        --primary-dark: #2e7d32;
+        --secondary: #5d9cec;
+        --info: #3498db;
+        --success: #27ae60;
+        --warning: #f39c12;
+        --danger: #e74c3c;
+        --light: #f8f9fa;
+        --dark: #343a40;
+        --gray: #6c757d;
+        --light-gray: #e9ecef;
+        --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        --transition: all 0.3s ease;
+    }
+    
+    .notifications-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 30px 20px;
+    }
+    
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--light-gray);
+    }
+    
+    .page-title {
+        display: flex;
+        align-items: center;
+        color: var(--dark);
+        font-weight: 600;
+        font-size: 2.2rem;
+    }
+    
+    .page-title i {
+        background: linear-gradient(120deg, var(--primary), var(--primary-light));
+        color: white;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 20px;
+        box-shadow: 0 4px 15px rgba(46, 139, 87, 0.3);
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+    }
+    
+    .action-btn {
+        background: white;
+        border: 1px solid var(--light-gray);
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+    
+    .btn-mark-all {
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+    
+    .btn-clear-all {
+        color: var(--danger);
+        border-color: var(--danger);
+    }
+    
+    .notification-tabs {
+        display: flex;
+        margin-bottom: 30px;
+        border-bottom: 1px solid var(--light-gray);
+    }
+    
+    .notification-tab {
+        padding: 15px 30px;
+        cursor: pointer;
+        position: relative;
+        font-weight: 500;
+        transition: var(--transition);
+        color: var(--gray);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .notification-tab.active {
+        color: var(--primary);
+    }
+    
+    .notification-tab.active:after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--primary);
+    }
+    
+    .tab-badge {
+        display: inline-block;
+        padding: 0 6px;
+        font-size: 12px;
+        min-width: 24px;
+        height: 24px;
+        border-radius: 12px;
+        background: var(--light-gray);
+        color: var(--gray);
+        text-align: center;
+    }
+    
+    .notification-tab.active .tab-badge {
+        background: var(--primary);
+        color: white;
+    }
+    
+    .notification-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .notification-card {
+        display: flex;
+        padding: 20px;
+        border-radius: 15px;
+        background: white;
+        box-shadow: var(--card-shadow);
+        transition: var(--transition);
+        border-left: 4px solid transparent;
+        position: relative;
+    }
+    
+    .notification-card.unread {
+        border-left: 4px solid var(--primary);
+        background: linear-gradient(to right, rgba(46, 139, 87, 0.03), white);
+    }
+    
+    .notification-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+    
+    .notification-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        color: white;
+        margin-right: 20px;
+        flex-shrink: 0;
+    }
+    
+    .icon-connection {
+        background: linear-gradient(120deg, var(--secondary), #4a89dc);
+    }
+    
+    .icon-message {
+        background: linear-gradient(120deg, var(--success), #2ecc71);
+    }
+    
+    .icon-system {
+        background: linear-gradient(120deg, var(--warning), #f6bb42);
+    }
+    
+    .notification-content {
+        flex-grow: 1;
+    }
+    
+    .notification-message {
+        font-size: 16px;
+        margin-bottom: 8px;
+        line-height: 1.5;
+    }
+    
+    .notification-meta {
+        display: flex;
+        align-items: center;
+        color: var(--gray);
+        font-size: 14px;
+        gap: 15px;
+    }
+    
+    .notification-time {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .notification-type {
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+    
+    .type-connection {
+        background: rgba(93, 156, 236, 0.15);
+        color: var(--secondary);
+    }
+    
+    .type-message {
+        background: rgba(39, 174, 96, 0.15);
+        color: var(--success);
+    }
+    
+    .type-system {
+        background: rgba(243, 156, 18, 0.15);
+        color: var(--warning);
+    }
+    
+    .notification-actions {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    
+    .mark-btn {
+        background: var(--light-gray);
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition);
+        color: var(--gray);
+    }
+    
+    .mark-btn:hover {
+        background: var(--primary-light);
+        color: white;
+    }
+    
+    .action-link {
+        padding: 8px 15px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+    
+    .link-view {
+        background: var(--primary);
+        color: white;
+        min-width: 120px;
+    }
+    
+    .link-view:hover {
+        background: var(--primary-dark);
+        color: white;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: var(--card-shadow);
+    }
+    
+    .empty-state-icon {
+        font-size: 80px;
+        color: #d1d7db;
+        margin-bottom: 20px;
+    }
+    
+    .empty-state-title {
+        font-weight: 600;
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+        color: var(--dark);
+    }
+    
+    .empty-state-text {
+        color: var(--gray);
+        max-width: 500px;
+        margin: 0 auto 30px;
+        font-size: 1.1rem;
+    }
+    
+    .btn-back {
+        background: var(--primary);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 8px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: var(--transition);
+        font-weight: 500;
+    }
+    
+    .btn-back:hover {
+        background: var(--primary-dark);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(46, 139, 87, 0.3);
+    }
+    
+    .unread-dot {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--primary);
+        box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.2);
+    }
+    
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 20px;
+        }
+        
+        .notification-card {
+            flex-direction: column;
+        }
+        
+        .notification-icon {
+            margin-right: 0;
+            margin-bottom: 15px;
+        }
+        
+        .notification-actions {
+            width: 100%;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="notifications-container">
+    <div class="page-header">
+        <h1 class="page-title">
+            <i class="fas fa-bell"></i>
+            <span>Notifications</span>
+        </h1>
+        <div class="action-buttons">
+            <form method="POST" action="{{ url_for('messages.mark_all_notifications_read') }}" style="display: inline;">
+                <button type="submit" class="action-btn btn-mark-all">
+                    <i class="fas fa-check-circle"></i> Mark All as Read
+                </button>
+            </form>
+            <form method="POST" action="{{ url_for('messages.clear_all_notifications') }}" style="display: inline;">
+                <button type="submit" class="action-btn btn-clear-all">
+                    <i class="fas fa-trash-alt"></i> Clear All
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="notification-tabs">
+        <div class="notification-tab active" data-tab="all">
+            <i class="fas fa-list"></i> All
+            <span class="tab-badge">{{ notifications|length }}</span>
+        </div>
+        <div class="notification-tab" data-tab="unread">
+            <i class="fas fa-envelope"></i> Unread
+            <span class="tab-badge">{{ unread_count }}</span>
+        </div>
+        <div class="notification-tab" data-tab="read">
+            <i class="fas fa-envelope-open"></i> Read
+            <span class="tab-badge">{{ read_count }}</span>
+        </div>
+    </div>
+    
+    <div class="notification-list">
+        {% if notifications %}
+            {% for notif in notifications %}
+                <div class="notification-card {% if not notif.read_status %}unread{% endif %}" data-type="{{ notif.type }}">
+                    {% if not notif.read_status %}<div class="unread-dot"></div>{% endif %}
+                    
+                    <div class="notification-icon 
+                        {% if notif.type == 'connection_request' %}icon-connection
+                        {% elif notif.type == 'new_message' %}icon-message
+                        {% else %}icon-system{% endif %}">
+                        {% if notif.type == 'connection_request' %}<i class="fas fa-user-friends"></i>
+                        {% elif notif.type == 'new_message' %}<i class="fas fa-comment-alt"></i>
+                        {% else %}<i class="fas fa-info-circle"></i>{% endif %}
+                    </div>
+                    
+                    <div class="notification-content">
+                        <div class="notification-message">{{ notif.content }}</div>
+                        <div class="notification-meta">
+                            <div class="notification-time">
+                                <i class="far fa-clock"></i>
+                                {{ notif.timestamp.strftime('%b %d, %Y at %I:%M %p') }}
+                            </div>
+                            <div class="notification-type 
+                                {% if notif.type == 'connection_request' %}type-connection
+                                {% elif notif.type == 'new_message' %}type-message
+                                {% else %}type-system{% endif %}">
+                                {{ notif.type|replace('_', ' ')|title }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-actions">
+                        {% if not notif.read_status %}
+                            <form method="POST" action="{{ url_for('messages.mark_notification_read', notification_id=notif.id) }}" style="display: inline;">
+                                <button type="submit" class="mark-btn" title="Mark as Read">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </form>
+                        {% endif %}
+                        
+                        {% if notif.type == 'connection_request' %}
+                            <a href="{{ url_for('messages.manage_connections') }}" class="action-link link-view">
+                                <i class="fas fa-external-link-alt"></i> View Request
+                            </a>
+                        {% elif notif.type == 'new_message' and notif.related_id %}
+                            <a href="{{ url_for('messages.messages_view', chat_with_id=notif.related_id) }}" class="action-link link-view">
+                                <i class="fas fa-external-link-alt"></i> View Message
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="far fa-bell-slash"></i>
+                </div>
+                <h3 class="empty-state-title">No Notifications Yet</h3>
+                <p class="empty-state-text">You don't have any notifications at the moment. When you do, they'll appear here.</p>
+                <a href="{{ url_for('main.home') }}" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Back to Home
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabs = document.querySelectorAll('.notification-tab');
+        const notificationCards = document.querySelectorAll('.notification-card');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs
+                tabs.forEach(t => t.classList.remove('active'));
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                const tabType = this.getAttribute('data-tab');
+                
+                // Filter notifications
+                notificationCards.forEach(card => {
+                    if (tabType === 'all') {
+                        card.style.display = 'flex';
+                    } else if (tabType === 'unread') {
+                        if (card.classList.contains('unread')) {
+                            card.style.display = 'flex';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    } else if (tabType === 'read') {
+                        if (!card.classList.contains('unread')) {
+                            card.style.display = 'flex';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    }
+                });
+            });
+        });
+        
+        // Add animation when marking as read
+        const markButtons = document.querySelectorAll('.mark-btn');
+        markButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const card = this.closest('.notification-card');
+                if (card) {
+                    card.classList.remove('unread');
+                    card.style.borderLeftColor = 'transparent';
+                    
+                    // Find and remove unread dot
+                    const unreadDot = card.querySelector('.unread-dot');
+                    if (unreadDot) unreadDot.remove();
+                    
+                    // Change button to checkmark
+                    this.innerHTML = '<i class="fas fa-check-double"></i>';
+                    this.style.background = '#27ae60';
+                    this.style.color = 'white';
+                    
+                    // Disable button after click
+                    this.disabled = true;
+                }
+            });
+        });
+        
+        // Add hover effects to notification cards
+        notificationCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    });
+</script>
+{% endblock %}

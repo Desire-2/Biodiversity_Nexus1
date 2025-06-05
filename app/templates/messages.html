@@ -1,97 +1,994 @@
-{% extends 'base.html' %}
-{% block content %}
-<div class="container mt-5 chat-page">
-  <h2 class="mb-4 text-center text-primary">
-    <i class="fas fa-envelope"></i> Messages
-  </h2>
-  
-  <!-- Chat Window -->
-  <div class="chat-window bg-white rounded shadow-sm p-3 mb-4">
-    {% for message in received_messages %}
-      <div class="chat-message received">
-        <div class="message-content">{{ message.content }}</div>
-        <div class="message-meta">
-          <small>{{ message.date_sent }} - From: {{ message.sender.username }}</small>
-        </div>
-      </div>
-    {% endfor %}
-    {% for message in sent_messages %}
-      <div class="chat-message sent">
-        <div class="message-content">{{ message.content }}</div>
-        <div class="message-meta">
-          <small>{{ message.date_sent }} - To: {{ message.recipient.username }}</small>
-        </div>
-      </div>
-    {% endfor %}
-  </div>
-  
-  <!-- Message Input Form -->
-  <form method="POST" action="{{ url_for('messages.messages_view') }}" class="chat-input bg-white p-3 rounded shadow-sm">
-    {{ form.hidden_tag() }}
-    <!-- (Optional) Recipient Field if needed -->
-    <div class="form-group mb-2">
-      {{ form.recipient.label(class="form-label") }}
-      {{ form.recipient(class="form-control", placeholder="Recipient username") }}
-    </div>
-    <div class="form-group mb-2">
-      {{ form.content.label(class="form-label") }}
-      {{ form.content(class="form-control", placeholder="Type your message...") }}
-    </div>
-    <div class="form-group mb-0 text-right">
-      {{ form.submit(class="btn btn-primary") }}
-    </div>
-  </form>
-</div>
+{% extends '_macros.html' %}
 
+{% block title %}Messages{% endblock %}
+
+{% block styles %}
 <style>
-  /* Overall Chat Page Layout */
-  .chat-page {
-    max-width: 600px;
-    margin: auto;
-  }
-  /* Chat Window Styling */
-  .chat-window {
-    max-height: 400px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-radius: 10px;
-  }
-  /* Chat Bubble Styling */
-  .chat-message {
-    max-width: 70%;
-    padding: 10px 15px;
-    border-radius: 20px;
-    word-wrap: break-word;
-    position: relative;
-    font-size: 1rem;
-  }
-  .chat-message.received {
-    background-color: #e4e6eb;
-    align-self: flex-start;
-    border-top-left-radius: 0;
-  }
-  .chat-message.sent {
-    background-color: #dcf8c6;
-    align-self: flex-end;
-    border-top-right-radius: 0;
-  }
-  .message-meta {
-    font-size: 0.75rem;
-    color: #555;
-    margin-top: 5px;
-    text-align: right;
-  }
-  /* Input Form Styling */
-  .chat-input .form-control {
-    border-radius: 20px;
-    box-shadow: none;
-  }
-  .chat-input .form-group {
-    margin-bottom: 1rem;
-  }
+    :root {
+        --primary-color: #128C7E;
+        --primary-light: #25D366;
+        --primary-dark: #075E54;
+        --secondary-color: #34B7F1;
+        --background-light: #F0F2F5;
+        --background-dark: #202C33;
+        --text-light: #FFFFFF;
+        --text-dark: #3B4A54;
+        --text-secondary: #8696A0;
+        --bubble-sent: #DCF8C6;
+        --bubble-received: #FFFFFF;
+        --notification: #00A884;
+        --hover-bg: #F5F5F5;
+        --active-bg: #E8F4FE;
+    }
+
+    .chat-container {
+        display: flex;
+        height: calc(100vh - 60px);
+        background-color: var(--background-light);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+        width: 30%;
+        min-width: 300px;
+        max-width: 400px;
+        background-color: white;
+        border-right: 1px solid #e1e1e1;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        position: relative;
+        z-index: 10;
+    }
+
+    .sidebar-header {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        background-color: var(--primary-dark);
+        color: white;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .sidebar-header img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid rgba(255,255,255,0.3);
+        margin-right: 15px;
+    }
+
+    .user-info {
+        flex-grow: 1;
+        font-weight: 500;
+        font-size: 18px;
+    }
+
+    .icons {
+        display: flex;
+        gap: 20px;
+    }
+
+    .icons a {
+        color: rgb(24, 156, 7);
+        text-decoration: none;
+        font-size: 18px;
+        position: relative;
+        transition: transform 0.2s;
+    }
+
+    .icons a:hover {
+        transform: scale(1.1);
+    }
+
+    .notification-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background-color: var(--notification);
+        color: rgb(236, 57, 2);
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        font-size: 11px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+    }
+
+    /* Search Bar */
+    .search-container {
+        padding: 10px 15px;
+        background-color: white;
+        position: relative;
+    }
+
+    .search-box {
+        background-color: var(--background-light);
+        border-radius: 18px;
+        padding: 8px 15px 8px 40px;
+        display: flex;
+        align-items: center;
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 30px;
+        color: var(--text-secondary);
+        font-size: 14px;
+    }
+
+    .search-box input {
+        width: 100%;
+        border: none;
+        background: transparent;
+        outline: none;
+        font-size: 14px;
+        color: var(--text-dark);
+    }
+
+    /* Tabs */
+    .sidebar-tabs {
+        display: flex;
+        border-bottom: 1px solid #e1e1e1;
+        background-color: white;
+    }
+
+    .sidebar-tab {
+        flex: 1;
+        text-align: center;
+        padding: 15px 0;
+        font-weight: 500;
+        color: var(--text-secondary);
+        cursor: pointer;
+        position: relative;
+        transition: color 0.3s;
+    }
+
+    .sidebar-tab.active {
+        color: var(--primary-dark);
+    }
+
+    .sidebar-tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%;
+        height: 3px;
+        background-color: var(--primary-dark);
+        border-radius: 3px;
+    }
+
+    .sidebar-tab:hover:not(.active) {
+        color: var(--primary-color);
+        background-color: var(--hover-bg);
+    }
+
+    /* Chat List */
+    .sidebar-content {
+        flex-grow: 1;
+        overflow-y: auto;
+        background-color: white;
+    }
+
+    .sidebar-panel {
+        display: none;
+    }
+
+    .sidebar-panel.active {
+        display: block;
+    }
+
+    .chat-list-item {
+        display: flex;
+        padding: 12px 15px;
+        text-decoration: none;
+        color: var(--text-dark);
+        border-bottom: 1px solid #f0f2f5;
+        transition: background-color 0.2s;
+        position: relative;
+    }
+
+    .chat-list-item:hover {
+        background-color: var(--hover-bg);
+    }
+
+    .chat-list-item.active {
+        background-color: var(--active-bg);
+    }
+
+    .chat-list-item img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 15px;
+        border: 2px solid var(--primary-light);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .chat-info {
+        flex-grow: 1;
+        overflow: hidden;
+    }
+
+    .name-time {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+    }
+
+    .name {
+        font-weight: 500;
+        font-size: 16px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .time {
+        font-size: 12px;
+        color: var(--text-secondary);
+        min-width: 40px;
+        text-align: right;
+    }
+
+    .last-message {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        color: var(--text-secondary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .unread-badge {
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+    }
+
+    /* Discover Section */
+    .discover-section {
+        padding: 15px;
+        border-bottom: 1px solid #f0f2f5;
+    }
+
+    .discover-section h5 {
+        margin-bottom: 15px;
+        color: var(--primary-dark);
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+    }
+
+    .discover-section h5 i {
+        margin-right: 8px;
+        font-size: 18px;
+        color: var(--primary-color);
+    }
+
+    .user-list-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f2f5;
+    }
+
+    .user-list-item:last-child {
+        border-bottom: none;
+    }
+
+    .user-list-item img {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 15px;
+        border: 2px solid var(--primary-light);
+    }
+
+    .user-details {
+        flex-grow: 1;
+    }
+
+    .user-details .name {
+        font-weight: 500;
+        font-size: 16px;
+        color: var(--text-dark);
+    }
+
+    .status-text {
+        font-size: 13px;
+        color: var(--text-secondary);
+    }
+
+    .connect-button {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 18px;
+        padding: 8px 15px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 500;
+    }
+
+    .connect-button:hover:not(:disabled) {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .connect-button.disabled {
+        background-color: #e1e1e1;
+        color: #999;
+        cursor: not-allowed;
+    }
+
+    /* Chat Area */
+    .chat-area {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        background-color: #eae6df;
+        background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d1d7db' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
+        position: relative;
+    }
+
+    .chat-area.active {
+        display: flex;
+    }
+
+    .chat-header {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        background-color: var(--primary-dark);
+        color: white;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        z-index: 5;
+    }
+
+    .back-button {
+        color: white;
+        font-size: 20px;
+        margin-right: 15px;
+        text-decoration: none;
+        display: none;
+    }
+
+    .chat-header img {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 15px;
+        border: 2px solid rgba(255,255,255,0.3);
+    }
+
+    .contact-info {
+        flex-grow: 1;
+    }
+
+    .contact-info .name {
+        font-weight: 500;
+        font-size: 18px;
+    }
+
+    .status {
+        font-size: 13px;
+        color: rgba(255,255,255,0.8);
+    }
+
+    /* Messages Area */
+    .chat-messages {
+        flex-grow: 1;
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 80px;
+    }
+
+    .message-row {
+        display: flex;
+        margin-bottom: 15px;
+    }
+
+    .message-row.sent {
+        justify-content: flex-end;
+    }
+
+    .message-row.received {
+        justify-content: flex-start;
+    }
+
+    .message-bubble {
+        max-width: 70%;
+        padding: 12px 15px;
+        border-radius: 18px;
+        position: relative;
+        animation: fadeIn 0.3s ease-out;
+        box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+    }
+
+    .sent .message-bubble {
+        background-color: var(--bubble-sent);
+        border-top-right-radius: 5px;
+        margin-right: 10px;
+    }
+
+    .received .message-bubble {
+        background-color: var(--bubble-received);
+        border-top-left-radius: 5px;
+        margin-left: 10px;
+    }
+
+    .message-content {
+        font-size: 15px;
+        line-height: 1.4;
+        word-wrap: break-word;
+    }
+
+    .message-meta {
+        display: block;
+        text-align: right;
+        font-size: 11px;
+        color: var(--text-secondary);
+        margin-top: 5px;
+    }
+
+    .sent .message-meta {
+        color: #4CAF50;
+    }
+
+    /* Input Area */
+    .chat-footer {
+        display: flex;
+        padding: 15px;
+        background-color: #f0f0f0;
+        align-items: center;
+        position: sticky;
+        bottom: 0;
+        border-top: 1px solid #e1e1e1;
+    }
+
+    .footer-icons {
+        display: flex;
+        gap: 15px;
+        margin-right: 15px;
+    }
+
+    .footer-icons i {
+        font-size: 20px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .footer-icons i:hover {
+        color: var(--primary-color);
+    }
+
+    .chat-footer form {
+        display: flex;
+        flex-grow: 1;
+        background-color: white;
+        border-radius: 21px;
+        padding: 8px 15px;
+        align-items: center;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .chat-footer .form-control {
+        border: none;
+        background: transparent;
+        outline: none;
+        resize: none;
+        max-height: 100px;
+        flex-grow: 1;
+        font-size: 15px;
+        padding: 0;
+        margin: 0;
+    }
+
+    .chat-footer button {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-left: 10px;
+    }
+
+    .chat-footer button:hover {
+        background-color: var(--primary-dark);
+        transform: scale(1.05);
+    }
+
+    /* No Chat Selected */
+    .no-chat-selected {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        text-align: center;
+        padding: 20px;
+        color: var(--text-dark);
+    }
+
+    .no-chat-selected img {
+        width: 250px;
+        margin-bottom: 30px;
+        opacity: 0.8;
+    }
+
+    .no-chat-selected h4 {
+        font-size: 24px;
+        margin-bottom: 15px;
+        color: var(--primary-dark);
+    }
+
+    .no-chat-selected p {
+        font-size: 16px;
+        max-width: 400px;
+        color: var(--text-secondary);
+        margin-bottom: 30px;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    /* Typing Indicator */
+    .typing-indicator {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        padding: 10px 15px;
+        background-color: white;
+        border-radius: 18px;
+        width: fit-content;
+        box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+        animation: pulse 1.5s infinite;
+    }
+
+    .typing-indicator span {
+        height: 8px;
+        width: 8px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        display: inline-block;
+        margin: 0 2px;
+    }
+
+    .typing-indicator span:nth-child(1) {
+        animation: typing 1s infinite;
+        animation-delay: 0s;
+    }
+
+    .typing-indicator span:nth-child(2) {
+        animation: typing 1s infinite;
+        animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+        animation: typing 1s infinite;
+        animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 100%;
+            max-width: none;
+        }
+        
+        .chat-area {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .chat-area.active {
+            display: flex;
+        }
+        
+        .back-button {
+            display: block;
+        }
+    }
 </style>
+{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <!-- Sidebar Header -->
+    <div class="sidebar-header">
+      <img src="../static/uploads/avatar.jpg" alt="My Profile">
+      <div class="user-info">
+          {{ current_user.username }}
+      </div>
+      <div class="icons">
+        <a href="{{ url_for('messages.manage_connections') }}" title="Manage Connections"><i class="fas fa-user-friends"></i></a>
+        <a href="{{ url_for('messages.view_notifications') }}" title="Notifications" style="position: relative;">
+            <i class="fas fa-bell"></i>
+            {% if unread_notification_count > 0 %}
+                <span class="notification-badge">{{ unread_notification_count }}</span>
+            {% endif %}
+        </a>
+        <a href="#" id="settings-toggle" title="Settings"><i class="fas fa-cog"></i></a>
+      </div>
+    </div>
+    
+    <!-- Search Bar -->
+    <div class="search-container">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search or start new chat">
+        </div>
+    </div>
+
+    <!-- Sidebar Tabs -->
+    <div class="sidebar-tabs">
+        <div class="sidebar-tab active" data-tab="chats">
+            <i class="fas fa-comment-alt"></i> Chats
+        </div>
+        <div class="sidebar-tab" data-tab="discover">
+            <i class="fas fa-compass"></i> Discover
+        </div>
+        <a href="{{ url_for('messages.manage_connections') }}" class="sidebar-tab" style="text-decoration: none;">
+            <i class="fas fa-user-plus"></i> Requests
+        </a> 
+    </div>
+
+    <!-- Sidebar Content -->
+    <div class="sidebar-content">
+        <!-- Chats Panel -->
+        <div class="sidebar-panel active" id="panel-chats">
+            {% if conversations %}
+                {% for conv in conversations %}
+                <a href="{{ url_for('messages.messages_view', chat_with_id=conv.user.id) }}" class="chat-list-item {% if chat_with_user and chat_with_user.id == conv.user.id %}active{% endif %}" data-user-id="{{ conv.user.id }}">
+                    <img src="../static/uploads/avatar.jpg" alt="{{ conv.user.username }}">
+                    <div class="chat-info">
+                    <div class="name-time">
+                        <span class="name">{{ conv.user.username }}</span>
+                        <span class="time">{{ conv.last_message_time.strftime('%H:%M') if conv.last_message_time else '' }}</span>
+                    </div>
+                    <div class="last-message">
+                        <span>{{ conv.last_message_content | truncate(30) }}</span>
+                        {% if conv.unread_count > 0 %}
+                            <span class="unread-badge">{{ conv.unread_count }}</span>
+                        {% endif %}
+                    </div>
+                    </div>
+                </a>
+                {% endfor %}
+            {% else %}
+                <div class="no-chats-placeholder text-center py-5">
+                    <i class="fas fa-comment-alt" style="font-size: 48px; color: #d1d7db; margin-bottom: 15px;"></i>
+                    <p class="text-muted">No active chats yet</p>
+                    <p class="small text-muted">Start a conversation by connecting with others</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Discover Panel -->
+        <div class="sidebar-panel" id="panel-discover">
+            <!-- Recommended Users -->
+            <div class="discover-section">
+                <h5><i class="fas fa-star"></i> Recommended</h5>
+                {% if recommended_users %}
+                    <div class="recommendations-list">
+                        {% for user in recommended_users %}
+                            <div class="user-list-item">
+                                <img src="../static/uploads/avatar.jpg" alt="{{ user.username }}">
+                                <div class="user-details">
+                                    <span class="name">{{ user.username }}</span>
+                                    <span class="status-text">Common interests: Nature, Conservation</span>
+                                </div>
+                                <form method="POST" action="{{ url_for('messages.send_connection_request', receiver_id=user.id) }}" style="display: inline;">
+                                    <button type="submit" class="connect-button">Connect</button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted small px-2">No recommendations right now.</p>
+                {% endif %}
+            </div>
+
+            <!-- All Discoverable Users -->
+            <div class="discover-section">
+                <h5><i class="fas fa-globe-americas"></i> Find More People</h5>
+                {% if discoverable_users_with_status %}
+                    {% for item in discoverable_users_with_status %}
+                        <div class="user-list-item">
+                            <img src="../static/uploads/avatar.jpg">
+                            <div class="user-details">
+                                <span class="name">{{ item.user.username }}</span>
+                                {% if item.status != 'not_connected' and item.status != 'rejected' and item.status != 'self' %}
+                                    <span class="status-text">
+                                        {% if item.status == 'connected' %}Connected{% endif %}
+                                        {% if item.status == 'request_sent' %}Request Sent{% endif %}
+                                        {% if item.status == 'request_received' %}Request Received{% endif %}
+                                        {% if item.status == 'blocked' %}Blocked{% endif %}
+                                    </span>
+                                {% endif %}
+                            </div>
+                            {% if item.status == 'not_connected' or item.status == 'rejected' %}
+                                <form method="POST" action="{{ url_for('messages.send_connection_request', receiver_id=item.user.id) }}" style="display: inline;">
+                                    <button type="submit" class="connect-button">Connect</button>
+                                </form>
+                            {% elif item.status == 'request_sent' %}
+                                <button class="connect-button disabled" disabled>Sent</button>
+                            {% elif item.status == 'request_received' %}
+                                <a href="{{ url_for('messages.manage_connections') }}" class="connect-button" style="background-color: #ffc107; color: #333; text-decoration:none;">Respond</a>
+                            {% elif item.status == 'connected' %}
+                                {# Optionally show a message button or nothing #}
+                                <button class="connect-button disabled" disabled style="background-color: #28a745;">Connected</button>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    {# Add Pagination Links Here if implemented #}
+                {% else %}
+                    <p class="text-muted small px-2">No other users found to connect with.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- Chat Area -->
+  <div class="chat-area {% if chat_with_user %}active{% endif %}" id="chat-area">
+    {% if chat_with_user %}
+      <!-- Chat Header -->
+      <div class="chat-header">
+        <a href="#" class="back-button d-md-none" id="back-to-sidebar"><i class="fas fa-arrow-left"></i></a> <!-- Back button for mobile -->
+        <img src="../static/uploads/avatar.jpg" alt="{{ chat_with_user.username }}">
+        <div class="contact-info">
+          <div class="name">{{ chat_with_user.username }}</div>
+          <div class="status">Online</div>
+        </div>
+        <div class="header-icons">
+            <a href="#" title="Call"><i class="fas fa-phone-alt"></i></a>
+            <a href="#" title="Video Call"><i class="fas fa-video"></i></a>
+            <a href="#" title="More Options"><i class="fas fa-ellipsis-v"></i></a>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="chat-messages" id="chat-messages">
+        {% for message in messages %}
+          <div class="message-row {{ 'sent' if message.sender_id == current_user.id else 'received' }}">
+            <div class="message-bubble">
+                <div class="message-content">{{ message.content }}</div>
+                <span class="message-meta">{{ message.date_sent.strftime('%H:%M') }}</span>
+            </div>
+          </div>
+        {% endfor %}
+        
+        <!-- Typing indicator (example) -->
+        {% if chat_with_user and chat_with_user.id == 2 %}
+        <div class="message-row received">
+            <div class="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Message Input Form -->
+      <div class="chat-footer">
+         <div class="footer-icons">
+             <i class="far fa-grin"></i> <!-- Emoji -->
+             <i class="fas fa-paperclip"></i> <!-- Attach -->
+         </div>
+        <form method="POST" action="{{ url_for('messages.messages_view', chat_with_id=chat_with_user.id) }}" style="display: flex; flex-grow: 1; align-items: center;">
+          {{ form.hidden_tag() }}
+          {{ form.content(class="form-control", placeholder="Type a message...", autocomplete="off", rows="1") }}
+          <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
+        </form>
+      </div>
+
+    {% else %}
+      <!-- No Chat Selected Placeholder -->
+      <div class="no-chat-selected">
+          <img src="https://cdn-icons-png.flaticon.com/512/4210/4210933.png" alt="Connect">
+          <h4>Keep your connection active</h4>
+          <p>Select a chat to start messaging or discover new people in the Biodiversity community.</p>
+          <div class="tips">
+              <p><i class="fas fa-lightbulb"></i> Tip: You can search for users by name or interest</p>
+          </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Auto-scroll to bottom of messages
+    const chatMessages = document.getElementById('chat-messages');
+    if (chatMessages) {
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Sidebar Tab Switching
+    const tabs = document.querySelectorAll('.sidebar-tab');
+    const panels = document.querySelectorAll('.sidebar-panel');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function(e) {
+        if (this.dataset.tab) { // Check if it's a panel tab
+            e.preventDefault();
+            const targetPanelId = 'panel-' + this.dataset.tab;
+            
+            // Update tab active state
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Update panel active state
+            panels.forEach(panel => {
+                if (panel.id === targetPanelId) {
+                    panel.classList.add('active');
+                } else {
+                    panel.classList.remove('active');
+                }
+            });
+        }
+      });
+    });
+
+    // Mobile View: Activate Chat Area on Chat Click
+    const chatListItems = document.querySelectorAll('.chat-list-item');
+    const chatArea = document.getElementById('chat-area');
+    const sidebar = document.getElementById('sidebar');
+    const backButton = document.getElementById('back-to-sidebar');
+
+    chatListItems.forEach(item => {
+        item.addEventListener('click', function(event) {
+            // Prevent default link behavior only if on small screens where JS handles view switching
+            if (window.innerWidth <= 768) {
+                 event.preventDefault(); 
+                 if (chatArea) chatArea.classList.add('active');
+                 if (sidebar) sidebar.classList.add('chat-active'); // Optional: hide sidebar
+                 
+                 // Simulate loading effect
+                 chatArea.innerHTML = `
+                    <div class="chat-header">
+                        <a href="#" class="back-button d-md-none" id="back-to-sidebar"><i class="fas fa-arrow-left"></i></a>
+                        <div class="skeleton-avatar"></div>
+                        <div class="contact-info">
+                            <div class="skeleton-name"></div>
+                            <div class="skeleton-status"></div>
+                        </div>
+                    </div>
+                    <div class="chat-messages" style="display: flex; justify-content: center; align-items: center;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                 `;
+                 
+                 // After delay, load the actual chat
+                 setTimeout(() => {
+                     window.location.href = this.href;
+                 }, 800);
+            }
+        });
+    });
+
+    // Mobile View: Back Button Functionality
+    if (backButton) {
+        backButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            if (chatArea) chatArea.classList.remove('active');
+            if (sidebar) sidebar.classList.remove('chat-active');
+        });
+    }
+
+    // Auto-resize message input textarea
+    const messageInput = document.querySelector('.chat-footer .form-control');
+    if(messageInput) {
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+            
+            // Limit height to 100px
+            if (this.scrollHeight > 100) {
+                this.style.overflowY = 'auto';
+            } else {
+                this.style.overflowY = 'hidden';
+            }
+        });
+        
+        // Trigger input event to set initial height
+        messageInput.dispatchEvent(new Event('input'));
+    }
+
+    // Add emoji picker functionality (placeholder)
+    document.querySelector('.fa-grin').addEventListener('click', function() {
+        alert('Emoji picker would open here');
+    });
+    
+    // Add attachment functionality (placeholder)
+    document.querySelector('.fa-paperclip').addEventListener('click', function() {
+        alert('Attachment options would open here');
+    });
+    
+    // Search functionality
+    const searchInput = document.querySelector('.search-box input');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const chatItems = document.querySelectorAll('.chat-list-item');
+            
+            chatItems.forEach(item => {
+                const name = item.querySelector('.name').textContent.toLowerCase();
+                if (name.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    }
+    
+    // Simulate online status changes
+    setInterval(() => {
+        const statusEl = document.querySelector('.status');
+        if (statusEl) {
+            // Randomly change status for demo purposes
+            const statuses = ['Online', 'Typing...', 'Online'];
+            statusEl.textContent = statuses[Math.floor(Math.random() * statuses.length)];
+        }
+    }, 5000);
+
+  });
+</script>
 {% endblock %}

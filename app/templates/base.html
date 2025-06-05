@@ -4,12 +4,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Biodiversity Nexus - A place to discuss and share insights about biodiversity and conservation.">
-    <meta name="keywords" content="biodiversity, conservation, forum, environment, nature">
+        <!-- Existing meta tags -->
+        <meta name="description" content="Biodiversity Nexus - Youth-driven conservation organization in Rwanda promoting biodiversity through community empowerment, climate action, and landscape restoration. Join our conservation initiatives and make an impact.">
+        <meta name="keywords" content="biodiversity conservation, climate change mitigation, Rwanda environmental NGO, youth conservation, landscape restoration, community outreach, wildlife protection, sustainable ecosystems">
+        
+        <!-- Open Graph/Facebook -->
+        <meta property="og:title" content="Biodiversity Nexus | Youth-Driven Conservation in Rwanda">
+        <meta property="og:description" content="Join Rwanda's leading youth conservation organization in protecting biodiversity through community empowerment and sustainable initiatives.">
+        <meta property="og:image" content="{{ url_for('static', filename='uploads/og-image.jpg') }}">
+        
+        <!-- Twitter Card -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="Biodiversity Nexus | Protecting Africa's Biodiversity">
+        <meta name="twitter:description" content="Youth-led conservation initiatives in the Albertine Rift Valley. Join our movement for sustainable ecosystems.">
+
+        <meta name="google-adsense-account" content="ca-pub-2776294322568123">
+
+        <script async type='module' src='https://interfaces.zapier.com/assets/web-components/zapier-interfaces/zapier-interfaces.esm.js'></script>
+        <zapier-interfaces-chatbot-embed is-popup='true' chatbot-id='cmaofwb6w003k80hd19rriex0'></zapier-interfaces-chatbot-embed>
+        
+        <!-- Schema.org Organization Markup -->
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "NGO",
+            "name": "Biodiversity Nexus",
+            "url": "https://www.biodiversitynexus.me",
+            "logo": "https://www.biodiversitynexus.me/static/uploads/logo.jpeg",
+            "founders": [
+                {
+                    "@type": "Person",
+                    "name": "Desire Bikorimana"
+                },
+                {
+                    "@type": "Person",
+                    "name": "Theophile Mwiseneza Uwe"
+                }
+            ],
+            "address": {
+                "@type": "PostalAddress",
+                "addressCountry": "Rwanda",
+                "addressLocality": "Kigali",
+                "addressRegion": "College of Science and Technology"
+            },
+            "contactPoint": {
+                "@type": "ContactPoint",
+                "email": "biodiversitynexus@yahoo.com",
+                "telephone": "+250780784924"
+            }
+        }
+        </script>
     <meta name="author" content="Desire Bikorimana">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>::. Biodiversity Nexus .::</title>
-    <link rel="icon" href="../static/uploads/logo.png" type="image/x-icon">
+    <link rel="icon" href="../static/uploads/logo.jpeg" type="image/x-icon">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -29,7 +77,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light">
         <a class="navbar-brand" href="/">
-            <img src="{{ url_for('static', filename='uploads/logo.png') }}" alt="Biodiversity Nexus Logo" style="height: 40px;">
+            <img src="{{ url_for('static', filename='uploads/logo.jpeg') }}" alt="Biodiversity Nexus Logo" style="height: 40px;">
             <span class="navbar-brand-text">Biodiversity Nexus</span>
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -103,21 +151,22 @@
      </div>
     {% endif %}
 
-        <div class="container mt-2" style="margin-top: 30px;">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    <div class="alert-container">
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                                {{ message }}
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            {% endwith %}
+    <div class="container mt-2" style="margin-top: 30px;">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="alert-container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    
             
             <div class="container">
                 {% block content %}
@@ -181,7 +230,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 Biodiversity Nexus Student Association. All rights reserved.</p>
+            <p>&copy; 2025 Biodiversity Nexus. All rights reserved.</p>
         </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -238,6 +287,28 @@
         .navbar-brand-text:hover {
             transform: rotate(360deg);
         }
+
+        .alert-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1050;
+        width: 300px;
+    }
+
+    .alert {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+        margin-bottom: 10px;
+        animation: fadeOut 5s forwards;
+    }
+
+    @keyframes fadeOut {
+        0% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { opacity: 0; }
+    }
+
     </style>
 
     <script>
@@ -272,6 +343,18 @@
             var description = document.querySelector('input[name=description]');
             description.value = quill.root.innerHTML;
         };
+
+        document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                alert.classList.remove('show');
+                alert.classList.add('fade');
+            });
+        }, 5000); // 5 seconds
+    });
+
+
     </script>
 </body>
 

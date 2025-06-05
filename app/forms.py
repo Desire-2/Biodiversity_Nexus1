@@ -54,9 +54,12 @@ class SearchForm(FlaskForm):
     submit = SubmitField('Search')
 
 class MessageForm(FlaskForm):
-    recipient = SelectField('Recipient', coerce=int, validators=[DataRequired()])
-    content = TextAreaField('Message Content', validators=[DataRequired()])
-    submit = SubmitField('Send Message')
+    content = TextAreaField(
+        'Message Content', 
+        validators=[DataRequired()],
+        render_kw={"placeholder": "Type a message...", "rows": 1} # Add placeholder and initial rows
+    )
+    submit = SubmitField('Send')
     
 class DonationForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
