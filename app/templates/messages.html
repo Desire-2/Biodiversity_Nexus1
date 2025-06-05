@@ -729,6 +729,7 @@
                                     <span class="status-text">Common interests: Nature, Conservation</span>
                                 </div>
                                 <form method="POST" action="{{ url_for('messages.send_connection_request', receiver_id=user.id) }}" style="display: inline;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <button type="submit" class="connect-button">Connect</button>
                                 </form>
                             </div>
