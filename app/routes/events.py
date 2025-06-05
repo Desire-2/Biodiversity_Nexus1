@@ -3,11 +3,23 @@ import uuid
 import smtplib
 import secrets
 import logging
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseUpload
+from io import BytesIO
 from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from functools import wraps
 from PIL import Image
+from sqlalchemy.exc import IntegrityError
+import traceback
+import random
+import string
+
+import random
+import string
+
 
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_required, current_user
@@ -16,6 +28,7 @@ from werkzeug.utils import secure_filename
 from app import db
 from app.forms import EventForm
 from app.models import Event, EventAttendance
+
 
 events = Blueprint('events', __name__)
 
@@ -105,9 +118,9 @@ def events_detail(event_id):
 def create_event():
     form = EventForm()
     if form.validate_on_submit():
-        image_file = None
+        drive_link = None
         if form.event_image.data:
-            image_file = save_event_image(form.event_image.data)
+            image_file  = save_event_image(form.event_image.data)
 
         event = Event(
             name=form.name.data,
@@ -116,13 +129,13 @@ def create_event():
             max_attendees=form.max_attendees.data,
             event_type=form.event_type.data,
             virtual_link=form.virtual_link.data,
-            event_image=image_file
+            image_file =drive_link  # Storing the Google Drive link
         )
         try:
             db.session.add(event)
             db.session.commit()
             flash('Event created successfully!', 'success')
-            return redirect(url_for('events.events_view'))
+            return redirect(url_for('events.admin_events_view'))
         except Exception as e:
             db.session.rollback()
             logging.error(f"Error creating event: {e}")
@@ -134,79 +147,212 @@ def create_event():
 
 
 def generate_confirmation_code(event, user):
-    """Generates a unique confirmation code based on UUID and timestamp."""
-    return f"{uuid.uuid4()}-{datetime.utcnow().timestamp()}"
-
+    """Generates a unique confirmation code starting with BIO-NEXUS followed by a unique 10-character code."""
+    unique_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
+    return f"BIO-NEXUS-{unique_code}"
+    """Generates a unique confirmation code starting with BIO-NEXUS followed by a unique 10-character code."""
+    unique_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
+    return f"BIO-NEXUS-{unique_code}"
 
 def build_email_body(event, user, confirmation_code):
     """Builds the HTML body for the confirmation email."""
     link_message = (f'Here is your link to join the virtual event: '
-                    f'<a href="{event.virtual_link}">{event.virtual_link}</a>'
-                    if event.event_type == 'virtual'
+                    f'<a href="{event.virtual_link}" style="color:#4CAF50; text-decoration:none;">{event.virtual_link}</a>'
+                    if event.event_type.lower() == 'virtual'
                     else "Please bring this confirmation to the event for entry.")
     return f'''
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <title>Event Registration Confirmation</title>
+    <meta charset="UTF-8">
+    <title>Event Registration Confirmation</title>
     <style>
+        /* Reset some basic styles */
+        body, p, h1, h2, h3, a {{
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }}
+        /* Reset some basic styles */
+        body, p, h1, h2, h3, a {{
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }}
         body {{
-            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            background-color: #f4f4f4;
             color: #333;
+            line-height: 1.6;
+            line-height: 1.6;
         }}
         .container {{
-            margin: 0 auto;
-            padding: 20px;
             max-width: 600px;
-            background-color: #f9f9f9;
+            margin: 30px auto;
+            background-color: #ffffff;
+            margin: 30px auto;
+            background-color: #ffffff;
             border: 1px solid #ddd;
-            border-radius: 5px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }}
         .header {{
-            font-size: 24px;
-            margin-bottom: 20px;
+            background-color: #4CAF50;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+        }}
+        .header h1 {{
+            font-size: 28px;
+            letter-spacing: 1px;
+        }}
+        .content {{
+            padding: 20px;
+        }}
+        .content h2 {{
+            font-size: 22px;
+            margin-bottom: 10px;
+            background-color: #4CAF50;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+        }}
+        .header h1 {{
+            font-size: 28px;
+            letter-spacing: 1px;
+        }}
+        .content {{
+            padding: 20px;
+        }}
+        .content h2 {{
+            font-size: 22px;
+            margin-bottom: 10px;
             color: #4CAF50;
         }}
+        .content p {{
+            margin-bottom: 15px;
+            font-size: 16px;
+        }}
+        .content p {{
+            margin-bottom: 15px;
+            font-size: 16px;
+        }}
         .event-details {{
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 15px;
             margin-bottom: 20px;
         }}
+        .event-details p {{
+            margin: 8px 0;
+        }}
+        .confirmation-code {{
+            font-weight: bold;
+            color: #FF5722;
+        }}
+        .event-details p {{
+            margin: 8px 0;
+        }}
+        .confirmation-code {{
+            font-weight: bold;
+            color: #FF5722;
+        }}
         .footer {{
+            background-color: #f4f4f4;
+            padding: 15px;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 15px;
+            text-align: center;
             font-size: 12px;
             color: #777;
-            margin-top: 20px;
         }}
-        .social-icons img {{
-            width: 24px;
-            height: 24px;
-            margin-right: 10px;
+        .footer a {{
+            color: #4CAF50;
+            text-decoration: none;
+        }}
+        .social-icons {{
+            margin-top: 10px;
+        }}
+        .footer a {{
+            color: #4CAF50;
+            text-decoration: none;
+        }}
+        .social-icons {{
+            margin-top: 10px;
+        }}
+        .social-icons a {{
+            display: inline-block;
+            margin: 0 5px;
+            transition: transform 0.3s ease;
+        }}
+        .social-icons a:hover {{
+            transform: scale(1.1);
+        }}
+        /* Responsive for mobile */
+        @media only screen and (max-width: 600px) {{
+            .container {{
+                width: 90%;
+                margin: 20px auto;
+            }}
+        .social-icons a {{
+            display: inline-block;
+            margin: 0 5px;
+            transition: transform 0.3s ease;
+        }}
+        .social-icons a:hover {{
+            transform: scale(1.1);
+        }}
+        /* Responsive for mobile */
+        @media only screen and (max-width: 600px) {{
+            .container {{
+                width: 90%;
+                margin: 20px auto;
+            }}
         }}
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">Event Registration Confirmation</div>
-        <p>Dear {user.username},</p>
-        <p>Thank you for registering for the event: <strong>{event.name}</strong>.</p>
-        <div class="event-details">
-            <p><strong>Event Details:</strong></p>
-            <p>📅 <strong>Name:</strong> {event.name}</p>
-            <p>📆 <strong>Date:</strong> {event.date}</p>
-            <p>📝 <strong>Description:</strong> {event.description}</p>
-            <p>🏷️ <strong>Event Type:</strong> {event.event_type}</p>
-            <p>🔒 <strong>Confirmation Code:</strong> {confirmation_code}</p>
-            <p>{link_message}</p>
+        <div class="header">
+            <h1>Registration Confirmed!</h1>
         </div>
-        <p>We look forward to seeing you there!</p>
-        <p>Best Regards,<br>The Events Team</p>
+        <div class="content">
+            <p>Dear {user.username},</p>
+            <p>Thank you for registering for the event <strong>{event.name}</strong>. We are excited to have you join us!</p>
+            <div class="event-details">
+                <h2>Event Details</h2>
+                <p><strong>Event Name:</strong> {event.name}</p>
+                <p><strong>Date & Time:</strong> {event.date}</p>
+                <p><strong>Description:</strong> {event.description}</p>
+                <p><strong>Event Type:</strong> {event.event_type}</p>
+                <p><strong>Confirmation Code:</strong> <span class="confirmation-code">{confirmation_code}</span></p>
+                <p>{link_message}</p>
+            </div>
+            <p>We look forward to seeing you at the event!</p>
+            <p>Best Regards,<br>The Events Team</p>
+        </div>
         <div class="footer">
-            <p>This message was sent to {user.username} because you registered for the event.</p>
-            <p>📧 Contact us: biodiversitynexus@yahoo.com</p>
-            <p>🌐 Visit our website: <a href="http://biodiversitynexus.me/">www.biodiversitynexus.me/</a></p>
-            <p>📱 Follow us on social media:</p>
+            <p>You received this email because you registered for an event with us.</p>
+            <p>Contact us: <a href="mailto:biodiversitynexus@yahoo.com">biodiversitynexus@yahoo.com</a></p>
+            <p>Visit our website: <a href="http://biodiversitynexus.me/">www.biodiversitynexus.me</a></p>
             <div class="social-icons">
-                <a href="https://www.facebook.com/profile.php?id=61563059986794"><img src="https://img.icons8.com/color/48/000000/facebook.png" alt="Facebook"></a>
-                <a href="https://x.com/Biod_Nexus"><img src="https://img.icons8.com/color/48/000000/twitter.png" alt="Twitter"></a>
-                <a href="https://www.instagram.com/biodiversitynexus/"><img src="https://img.icons8.com/color/48/000000/instagram-new.png" alt="Instagram"></a>
-                <a href="https://www.linkedin.com/company/biodiversity-nexus/company/example"><img src="https://img.icons8.com/color/48/000000/linkedin.png" alt="LinkedIn"></a>
+                <a href="https://www.facebook.com/profile.php?id=61563059986794" target="_blank"><img src="https://img.icons8.com/color/48/000000/facebook.png" alt="Facebook" /></a>
+                <a href="https://x.com/Biod_Nexus" target="_blank"><img src="https://img.icons8.com/color/48/000000/twitter.png" alt="Twitter" /></a>
+                <a href="https://www.instagram.com/biodiversitynexus/" target="_blank"><img src="https://img.icons8.com/color/48/000000/instagram-new.png" alt="Instagram" /></a>
+                <a href="https://www.linkedin.com/company/biodiversity-nexus/" target="_blank"><img src="https://img.icons8.com/color/48/000000/linkedin.png" alt="LinkedIn" /></a>\n 
             </div>
         </div>
     </div>
@@ -238,13 +384,36 @@ def send_confirmation_email(event, user, confirmation_code):
             logging.error(f"Failed to send confirmation email (attempt {attempt + 1}/{max_retries}): {e}")
             if attempt == max_retries - 1:
                 return False
+@events.route('/event/resend_confirmation/<int:id>', methods=['POST'])
+@login_required
+def resend_confirmation_email(id):
+    """Resends the confirmation email for a specific event."""
+    attendance = EventAttendance.query.filter_by(user_id=current_user.id, event_id=id).first()
+    if not attendance:
+        flash('You are not registered for this event.', 'warning')
+        return redirect(url_for('events.events_view'))
 
+    event = Event.query.get_or_404(id)
+    try:
+        # Resend the confirmation email
+        if send_confirmation_email(event, current_user, attendance.confirmation_code):
+            flash('Confirmation email resent successfully!', 'success')
+        else:
+            flash('Failed to resend confirmation email. Please try again later.', 'danger')
+    except Exception as e:
+        logging.error(f"Error resending confirmation email: {e}")
+        flash('An error occurred while resending the confirmation email.', 'danger')
+
+    return redirect(url_for('events.events_detail', event_id=id))
 
 @events.route('/event/register/<int:id>', methods=['GET', 'POST'])
 @login_required
 def register_event(id):
     event = Event.query.get_or_404(id)
-    existing_registration = EventAttendance.query.filter_by(user_id=current_user.id, event_id=id).first()
+    existing_registration = EventAttendance.query.filter_by(
+        user_id=current_user.id, 
+        event_id=id
+    ).first()
 
     if existing_registration:
         flash('You are already registered for this event.', 'warning')
@@ -254,31 +423,57 @@ def register_event(id):
         flash('Event is already full.', 'warning')
         return redirect(url_for('events.events_view'))
 
-    confirmation_code = generate_confirmation_code(event, current_user)
-    if send_confirmation_email(event, current_user, confirmation_code):
-        try:
-            attendance = EventAttendance(user_id=current_user.id,
-                                         event_id=event.id,
-                                         confirmation_code=confirmation_code)
-            db.session.add(attendance)
-            db.session.commit()
-            flash('Registered for the event successfully. Confirmation email sent.', 'success')
-        except Exception as e:
-            db.session.rollback()
-            logging.error(f"Failed to register for the event: {e}")
-            flash('Failed to register for the event. Please try again later.', 'danger')
-    else:
-        flash('Failed to send confirmation email. Please try to register again later.', 'danger')
+    try:
+        # Generate confirmation code first
+        confirmation_code = generate_confirmation_code(event, current_user)
+        
+        # Create attendance record
+        attendance = EventAttendance(
+            user_id=current_user.id,
+            event_id=event.id,
+            confirmation_code=confirmation_code
+        )
+        
+        # Add to session and commit first
+        db.session.add(attendance)
+        db.session.commit()
+        
+        # Only send email AFTER successful commit
+        if send_confirmation_email(event, current_user, confirmation_code):
+            flash('Registered successfully! Confirmation email sent.', 'success')
+        else:
+            flash('Registration successful, but confirmation email failed to send.', 'warning')
+            
+    except IntegrityError as e:
+        db.session.rollback()
+        logging.error(f"Integrity Error: {str(e.orig)}")
+        if "confirmation_code" in str(e.orig):
+            flash('Confirmation code collision - please retry', 'danger')
+        elif "_user_event_uc" in str(e.orig):
+            flash('Already registered for this event', 'warning')
+        else:
+            flash('Registration failed due to database conflict', 'danger')
+
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Error Type: {type(e)}")
+        logging.error(f"Error Message: {str(e)}")
+        logging.error(traceback.format_exc())
+        flash('Failed to complete registration. Please try again.', 'danger')
 
     return redirect(url_for('events.events_view'))
 
 
 @events.route('/event/<int:event_id>/update', methods=['GET', 'POST'])
 @login_required
-@admin_required
 def update_event(event_id):
     event = Event.query.get_or_404(event_id)
-    form = EventForm()
+    if not current_user.role == "admin":
+        flash('You do not have permission to access this page.', 'danger')
+        return redirect(url_for('events.events_view'))
+    
+    form = EventForm()  # Prepopulate form with existing event data
+
     if form.validate_on_submit():
         event.name = form.name.data
         event.date = form.date.data
@@ -287,33 +482,32 @@ def update_event(event_id):
         event.event_type = form.event_type.data
         event.virtual_link = form.virtual_link.data
 
-        # If a new image is provided, save and update it; otherwise, keep the existing image.
+        # Process the event image if a new one is provided
         if form.event_image.data:
             image_file = save_event_image(form.event_image.data)
             if image_file:
-                event.event_image = image_file
+                event.event_image = image_file  # Store the processed image URL or path
+                
+        # Commit the changes to the database
 
-        try:
-            db.session.commit()
-            flash('Event updated successfully!', 'success')
-            return redirect(url_for('events.events_view'))
-        except Exception as e:
-            db.session.rollback()
-            logging.error(f"Error updating event: {e}")
-            flash('Failed to update event. Please try again later.', 'danger')
+        db.session.commit()
+        flash('Event updated successfully!', 'success')
+        return redirect(url_for('events.admin_events_view'))
     elif request.method == 'GET':
+        # Populate form with existing event data
         form.name.data = event.name
         form.date.data = event.date
         form.description.data = event.description
         form.max_attendees.data = event.max_attendees
         form.event_type.data = event.event_type
         form.virtual_link.data = event.virtual_link
-        # File fields should not be pre-populated.
+        form.event_image.data = event.event_image # Assuming this is a URL or path to the image
 
     return render_template('create_event.html',
                            title='Update Event',
                            form=form,
                            legend='Update Event')
+
 
 
 @events.route('/event/cancel_registration/<int:id>', methods=['POST'])
@@ -334,22 +528,27 @@ def cancel_registration(id):
     return redirect(url_for('events.events_view'))
 
 
-@events.route('/event/delete/<int:event_id>', methods=['POST'])
+@events.route('/event/<int:event_id>/delete', methods=['POST'])
 @login_required
-@admin_required
 def delete_event(event_id):
     event = Event.query.get_or_404(event_id)
     try:
-        # Delete all related event attendance records first
-        EventAttendance.query.filter_by(event_id=event.id).delete()
+        # Check if the event has any attendees
+        attendees = EventAttendance.query.filter_by(event_id=event.id).all()
+        if attendees:
+            flash('Cannot delete event with registered attendees.', 'warning')
+            return redirect(url_for('events.events_view'))
+        
+        # Delete the event
         db.session.delete(event)
         db.session.commit()
+        
         flash('Event deleted successfully!', 'success')
     except Exception as e:
         db.session.rollback()
         logging.error(f"Error deleting event: {e}")
         flash('Failed to delete event. Please try again later.', 'danger')
-    return redirect(url_for('events.events_view'))
+    return redirect(url_for('events.admin_events_view'))
 
 
 @events.route('/admin/events', methods=['GET'])

@@ -3,6 +3,9 @@
 {% block content %}
 <div class="container my-5">
     <h2 class="text-center">Manage Users</h2>
+    <div class="text-right mb-3">
+        <a href="{{ url_for('auth.admin_add_user') }}" class="btn btn-success">Add New User</a>
+    </div>
     <ul class="list-group">
         {% for user in users %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
