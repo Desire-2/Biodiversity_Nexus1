@@ -342,6 +342,7 @@
                     <div class="connection-actions">
                         <form method="POST" action="{{ url_for('messages.handle_connection_action', connection_id=req.id, action='accept') }}" style="display: inline;">
                             <button type="submit" class="action-btn btn-accept">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <i class="fas fa-check"></i> Accept
                             </button>
                         </form>
@@ -386,6 +387,7 @@
                             <i class="fas fa-comment"></i> Message
                         </a>
                         <form method="POST" action="{{ url_for('messages.handle_connection_action', connection_id=user.id, action='remove') }}" style="display: inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="action-btn btn-remove">
                                 <i class="fas fa-user-minus"></i> Remove
                             </button>
@@ -424,6 +426,7 @@
                     </div>
                     <div class="connection-actions">
                         <form method="POST" action="{{ url_for('messages.handle_connection_action', connection_id=req.id, action='cancel') }}" style="display: inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="action-btn btn-cancel">
                                 <i class="fas fa-ban"></i> Cancel
                             </button>
