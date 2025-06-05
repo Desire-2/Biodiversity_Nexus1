@@ -614,29 +614,47 @@
     }
 
     /* Responsive Design */
-    @media (max-width: 768px) {
-        .sidebar {
-            width: 100%;
-            max-width: none;
-        }
-        
-        .chat-area {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-        
-        .chat-area.active {
-            display: flex;
-        }
-        
-        .back-button {
-            display: block;
-        }
+    @media (max-width: 992px) { /* Adjust breakpoint */
+      .sidebar {
+          flex: 0 0 40%;
+      }
+  }
+  @media (max-width: 768px) {
+    .sidebar {
+      flex: 0 0 100%;
+      max-width: 100%;
+      border-right: none;
+      z-index: 10; /* Ensure sidebar is on top when active */
     }
+    .chat-area {
+       position: absolute;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100%;
+       z-index: 5;
+       transition: transform 0.3s ease-in-out;
+       transform: translateX(100%); /* Start off-screen */
+    }
+    .chat-area.active {
+        transform: translateX(0);
+    }
+    .sidebar.chat-active {
+        /* Optionally hide sidebar when chat is active on mobile */
+        transform: translateX(-100%);
+    }
+    .chat-container {
+        height: 100vh;
+        overflow: hidden; /* Prevent container scroll */
+        position: relative;
+    }
+    .chat-header .back-button {
+        display: inline-block !important; /* Show back button */
+        margin-right: 10px;
+        color: #54656f;
+        font-size: 1.2rem;
+    }
+  }
 </style>
 {% endblock %}
 
