@@ -639,10 +639,15 @@
     .chat-area.active {
         transform: translateX(0);
     }
-    .sidebar.chat-active {
-        /* Optionally hide sidebar when chat is active on mobile */
+    /*.sidebar.chat-active {
+         Optionally hide sidebar when chat is active on mobile 
         transform: translateX(-100%);
     }
+    */
+      #sidebar.chat-active {
+      display: none;
+      }
+      
     .chat-container {
         height: 100vh;
         overflow: hidden; /* Prevent container scroll */
