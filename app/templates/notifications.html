@@ -377,7 +377,7 @@
         </h1>
         <div class="action-buttons">
             <form method="POST" action="{{ url_for('messages.mark_all_notifications_read') }}" style="display: inline;">
-                {{ form.hidden_tag() }}
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="action-btn btn-mark-all">
                     <i class="fas fa-check-circle"></i> Mark All as Read
                 </button>
