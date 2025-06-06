@@ -377,11 +377,13 @@
         </h1>
         <div class="action-buttons">
             <form method="POST" action="{{ url_for('messages.mark_all_notifications_read') }}" style="display: inline;">
+                {{ form.hidden_tag() }}
                 <button type="submit" class="action-btn btn-mark-all">
                     <i class="fas fa-check-circle"></i> Mark All as Read
                 </button>
             </form>
             <form method="POST" action="{{ url_for('messages.clear_all_notifications') }}" style="display: inline;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="action-btn btn-clear-all">
                     <i class="fas fa-trash-alt"></i> Clear All
                 </button>
@@ -438,6 +440,7 @@
                     <div class="notification-actions">
                         {% if not notif.read_status %}
                             <form method="POST" action="{{ url_for('messages.mark_notification_read', notification_id=notif.id) }}" style="display: inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <button type="submit" class="mark-btn" title="Mark as Read">
                                     <i class="fas fa-check"></i>
                                 </button>
