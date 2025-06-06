@@ -26,6 +26,8 @@
         height: calc(100vh - 60px);
         background-color: var(--background-light);
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        position: relative;
+        overflow: hidden;
     }
 
     /* Sidebar Styles */
@@ -38,7 +40,7 @@
         display: flex;
         flex-direction: column;
         box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        transition: all 0.3s ease;
+        transition: transform 0.3s ease;
         position: relative;
         z-index: 10;
     }
@@ -349,10 +351,12 @@
         background-color: #eae6df;
         background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d1d7db' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
         position: relative;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
     }
 
     .chat-area.active {
-        display: flex;
+        transform: translateX(0);
     }
 
     .chat-header {
@@ -404,6 +408,7 @@
         display: flex;
         flex-direction: column;
         padding-bottom: 80px;
+        scroll-behavior: smooth;
     }
 
     .message-row {
@@ -613,8 +618,72 @@
         50% { transform: translateY(-5px); }
     }
 
+    /* Mobile Bottom Navigation */
+    .mobile-bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: white;
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 0;
+        border-top: 1px solid #e1e1e1;
+        z-index: 1000;
+        display: none;
+    }
+    
+    .mobile-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 12px;
+        color: #8696a0;
+        text-decoration: none;
+    }
+    
+    .mobile-nav-item.active {
+        color: var(--primary-dark);
+    }
+    
+    .mobile-nav-item i {
+        font-size: 20px;
+        margin-bottom: 4px;
+    }
+
+    /* Skeleton Loading */
+    .skeleton-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: #e0e0e0;
+        margin-right: 15px;
+    }
+    
+    .skeleton-name {
+        width: 120px;
+        height: 20px;
+        background: #e0e0e0;
+        border-radius: 4px;
+        margin-bottom: 8px;
+    }
+    
+    .skeleton-status {
+        width: 80px;
+        height: 16px;
+        background: #e0e0e0;
+        border-radius: 4px;
+    }
+    
+    .loading-messages {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+
     /* Responsive Design */
-    @@media (max-width: 992px) {
+    @media (max-width: 992px) {
         .sidebar {
             width: 45%;
             min-width: 250px;
@@ -631,29 +700,25 @@
         .sidebar {
             width: 100%;
             max-width: 100%;
-            height: auto;
-            max-height: 60vh;
+            height: 100%;
             border-right: none;
-            border-bottom: 1px solid #e1e1e1;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             z-index: 100;
+            transform: translateX(0);
             transition: transform 0.3s ease;
         }
         
         .sidebar.chat-active {
-            transform: translateY(-100%);
+            transform: translateX(-100%);
         }
         
         .chat-area {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: 99;
             transform: translateX(100%);
-            transition: transform 0.3s ease;
-            display: flex !important;
         }
         
         .chat-area.active {
@@ -714,6 +779,10 @@
         .connect-button {
             padding: 6px 12px;
             font-size: 13px;
+        }
+
+        .mobile-bottom-nav {
+            display: flex;
         }
     }
 
@@ -818,28 +887,6 @@
         align-items: center;
         justify-content: center;
     }
-    
-    /* Mobile-specific enhancements */
-    .mobile-only {
-        display: none;
-    }
-    
-    @media (max-width: 768px) {
-        .mobile-only {
-            display: block;
-        }
-        
-        .desktop-only {
-            display: none;
-        }
-        
-        .sidebar-tabs {
-            position: sticky;
-            top: 0;
-            background: white;
-            z-index: 10;
-        }
-    }
 </style>
 {% endblock %}
 
@@ -869,7 +916,7 @@
     <div class="search-container">
         <div class="search-box">
             <i class="fas fa-search"></i>
-            <input type="text" placeholder="Search or start new chat">
+            <input type="text" placeholder="Search or start new chat" id="search-input">
         </div>
     </div>
 
@@ -1055,43 +1102,62 @@
 </div>
 
 <!-- Mobile Bottom Navigation -->
-<nav class="mobile-bottom-nav mobile-only">
-    <div class="mobile-nav-item active" data-target="chats">
+<nav class="mobile-bottom-nav">
+    <a href="#" class="mobile-nav-item active" data-target="chats">
         <i class="fas fa-comment-alt"></i>
         <span>Chats</span>
-    </div>
-    <div class="mobile-nav-item" data-target="discover">
+    </a>
+    <a href="#" class="mobile-nav-item" data-target="discover">
         <i class="fas fa-compass"></i>
         <span>Discover</span>
-    </div>
-    <div class="mobile-nav-item" data-target="requests">
+    </a>
+    <a href="{{ url_for('messages.manage_connections') }}" class="mobile-nav-item">
         <i class="fas fa-user-plus"></i>
         <span>Requests</span>
-    </div>
-    <div class="mobile-nav-item" id="mobile-profile">
+    </a>
+    <a href="{{ url_for('main.profile') }}" class="mobile-nav-item">
         <i class="fas fa-user"></i>
         <span>Profile</span>
-    </div>
+    </a>
 </nav>
 {% endblock %}
 
 {% block scripts %}
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Auto-scroll to bottom of messages
+    const sidebar = document.getElementById('sidebar');
+    const chatArea = document.getElementById('chat-area');
     const chatMessages = document.getElementById('chat-messages');
-    if (chatMessages) {
-      chatMessages.scrollTop = chatMessages.scrollHeight;
+    const backButton = document.getElementById('back-to-sidebar');
+    const messageInput = document.querySelector('.chat-footer .form-control');
+    const tabs = document.querySelectorAll('.sidebar-tab');
+    const panels = document.querySelectorAll('.sidebar-panel');
+    const chatListItems = document.querySelectorAll('.chat-list-item');
+    const baseMessagesUrl = "{{ url_for('messages.messages_view') }}";
+    const searchInput = document.getElementById('search-input');
+
+    // Auto-scroll to bottom of messages
+    function scrollToBottom() {
+        if (chatMessages) {
+            setTimeout(() => {
+                 chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 100);
+        }
+    }
+    
+    // Scroll on initial load if a chat is active
+    if (chatArea && chatArea.classList.contains('active')) {
+        scrollToBottom();
     }
 
     // Sidebar Tab Switching
-    const tabs = document.querySelectorAll('.sidebar-tab');
-    const panels = document.querySelectorAll('.sidebar-panel');
-
     tabs.forEach(tab => {
-      tab.addEventListener('click', function(e) {
-        if (this.dataset.tab) { // Check if it's a panel tab
-            e.preventDefault();
+      tab.addEventListener('click', function(event) {
+        if (this.tagName === 'A' && this.getAttribute('href') === '#') {
+            event.preventDefault();
+        }
+        
+        if (this.dataset.tab) {
             const targetPanelId = 'panel-' + this.dataset.tab;
             
             // Update tab active state
@@ -1100,13 +1166,8 @@
             
             // Update panel active state
             panels.forEach(panel => {
-                if (panel.id === targetPanelId) {
-                    panel.classList.add('active');
-                } else {
-                    panel.classList.remove('active');
-                }
+                panel.classList.toggle('active', panel.id === targetPanelId);
             });
-            
             // Scroll to top of sidebar content
             document.querySelector('.sidebar-content').scrollTop = 0;
         }
@@ -1114,18 +1175,41 @@
     });
 
     // Mobile View: Activate Chat Area on Chat Click
-    const chatListItems = document.querySelectorAll('.chat-list-item');
-    const chatArea = document.getElementById('chat-area');
-    const sidebar = document.getElementById('sidebar');
-    const backButton = document.getElementById('back-to-sidebar');
-
     chatListItems.forEach(item => {
         item.addEventListener('click', function(event) {
-            // Prevent default link behavior only if on small screens where JS handles view switching
             if (window.innerWidth <= 768) {
-                 event.preventDefault(); 
-                 chatArea.classList.add('active');
+                 event.preventDefault(); // Prevent default link navigation
+                 
+                 // Show loading state in chat area
+                 chatArea.innerHTML = `
+                    <div class="chat-header">
+                        <a href="#" class="back-button" id="back-to-sidebar"><i class="fas fa-arrow-left"></i></a>
+                        <div class="d-flex align-items-center">
+                            <div class="skeleton-avatar"></div>
+                            <div class="contact-info">
+                                <div class="skeleton-name"></div>
+                                <div class="skeleton-status"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="loading-messages">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                 `;
+                 
+                 // Apply transition classes
                  sidebar.classList.add('chat-active');
+                 chatArea.classList.add('active');
+                 
+                 // Get the target URL
+                 const chatUrl = this.href;
+                 
+                 // Navigate after delay
+                 setTimeout(() => {
+                     window.location.href = chatUrl;
+                 }, 300);
             }
         });
     });
@@ -1134,76 +1218,110 @@
     if (backButton) {
         backButton.addEventListener('click', function(event) {
             event.preventDefault();
-            chatArea.classList.remove('active');
             sidebar.classList.remove('chat-active');
+            chatArea.classList.remove('active');
+            window.history.pushState({ view: 'sidebar' }, '', baseMessagesUrl);
         });
     }
 
+    // Handle browser back button
+    window.addEventListener('popstate', function(event) {
+        if (window.innerWidth <= 768) {
+            if (window.location.pathname === new URL(baseMessagesUrl).pathname) {
+                 sidebar.classList.remove('chat-active');
+                 chatArea.classList.remove('active');
+            }
+        }
+    });
+
     // Auto-resize message input textarea
-    const messageInput = document.querySelector('.chat-footer .form-control');
-    if(messageInput) {
-        messageInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-            
-            // Limit height to 100px
-            if (this.scrollHeight > 100) {
-                this.style.overflowY = 'auto';
+    function autoResizeTextarea() {
+        if(messageInput) {
+            messageInput.style.height = 'auto';
+            let scrollHeight = messageInput.scrollHeight;
+            let maxHeight = 100;
+            if (scrollHeight > maxHeight) {
+                messageInput.style.height = maxHeight + 'px';
+                messageInput.style.overflowY = 'auto';
             } else {
-                this.style.overflowY = 'hidden';
+                messageInput.style.height = scrollHeight + 'px';
+                messageInput.style.overflowY = 'hidden';
+            }
+        }
+    }
+
+    if(messageInput) {
+        messageInput.addEventListener('input', autoResizeTextarea);
+        autoResizeTextarea(); 
+    }
+
+    // Handle form submission via Enter key
+    if (messageInput) {
+        messageInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                const form = messageInput.closest('form');
+                if (form) {
+                    const submitButton = form.querySelector('button[type="submit"]');
+                    if (submitButton) {
+                        submitButton.click();
+                    } else {
+                        form.submit();
+                    }
+                }
             }
         });
-        
-        // Trigger input event to set initial height
-        messageInput.dispatchEvent(new Event('input'));
     }
 
     // Mobile bottom navigation
     const mobileNavItems = document.querySelectorAll('.mobile-nav-item');
     mobileNavItems.forEach(item => {
-        item.addEventListener('click', function() {
-            const target = this.getAttribute('data-target');
-            
-            if (target) {
+        if (item.dataset.target) {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = this.dataset.target;
+                
                 // Remove active class from all items
                 mobileNavItems.forEach(i => i.classList.remove('active'));
                 // Add active class to clicked item
                 this.classList.add('active');
                 
                 // Show the corresponding panel
-                if (target === 'requests') {
-                    window.location.href = "{{ url_for('messages.manage_connections') }}";
-                } else {
-                    tabs.forEach(t => t.classList.remove('active'));
-                    document.querySelector(`.sidebar-tab[data-tab="${target}"]`).classList.add('active');
-                    
-                    panels.forEach(panel => panel.classList.remove('active'));
-                    document.getElementById(`panel-${target}`).classList.add('active');
-                    
-                    // Scroll to top
-                    document.querySelector('.sidebar-content').scrollTop = 0;
-                }
-            } else if (this.id === 'mobile-profile') {
-                window.location.href = "{{ url_for('main.profile') }}";
-            }
-        });
+                tabs.forEach(t => t.classList.remove('active'));
+                document.querySelector(`.sidebar-tab[data-tab="${target}"]`).click();
+            });
+        }
     });
 
     // Search functionality
-    const searchInput = document.querySelector('.search-box input');
     if (searchInput) {
         searchInput.addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase();
             const chatItems = document.querySelectorAll('.chat-list-item');
+            let hasResults = false;
             
             chatItems.forEach(item => {
                 const name = item.querySelector('.name').textContent.toLowerCase();
                 if (name.includes(searchTerm)) {
                     item.style.display = 'flex';
+                    hasResults = true;
                 } else {
                     item.style.display = 'none';
                 }
             });
+            
+            // Show no results message
+            const noResults = document.querySelector('.no-results-message');
+            if (!hasResults) {
+                if (!noResults) {
+                    const noResultsMsg = document.createElement('div');
+                    noResultsMsg.classList.add('no-results-message', 'text-center', 'py-4');
+                    noResultsMsg.innerHTML = `<i class="fas fa-search mb-2"></i><p>No conversations found</p>`;
+                    document.querySelector('.sidebar-content').appendChild(noResultsMsg);
+                }
+            } else if (noResults) {
+                noResults.remove();
+            }
         });
     }
     
@@ -1211,11 +1329,15 @@
     setInterval(() => {
         const statusEl = document.querySelector('.status');
         if (statusEl) {
-            // Randomly change status for demo purposes
-            const statuses = ['Online', 'Typing...', 'Online'];
+            const statuses = ['Online', 'Online', 'Online', 'Typing...'];
             statusEl.textContent = statuses[Math.floor(Math.random() * statuses.length)];
         }
     }, 5000);
+
+    // Initialize the chat area if we're on mobile with a chat open
+    if (window.innerWidth <= 768 && document.querySelector('.chat-area.active')) {
+        sidebar.classList.add('chat-active');
+    }
 
     // Mobile: Close keyboard when scrolling
     if ('ontouchstart' in window) {

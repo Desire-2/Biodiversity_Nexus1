@@ -55,12 +55,29 @@ from app.models import User
 @app.template_filter('time_ago')
 def time_ago(dt):
     if not dt:
-        return ''
+        return 'Unknown time'
     now = datetime.datetime.utcnow()
     diff = now - dt
     secs = diff.total_seconds()
+    if secs < 60:
+        return f"{int(secs)} seconds ago"
     mins = secs / 60
-    hrs  = mins / 60
+    if mins < 60:
+        return f"{int(mins)} minutes ago"
+    hrs = mins / 60
+    if hrs < 24:
+        return f"{int(hrs)} hours ago"
+    days = hrs / 24
+    if days < 7:
+        return f"{int(days)} days ago"
+    weeks = days / 7
+    if weeks < 4:
+        return f"{int(weeks)} weeks ago"
+    months = days / 30
+    if months < 12:
+        return f"{int(months)} months ago"
+    years = days / 365
+    return f"{int(years)} years ago"
 
 # Flask-Login user loader
 @login_manager.user_loader
