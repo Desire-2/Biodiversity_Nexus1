@@ -29,6 +29,17 @@ app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME")
 app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD")
 app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER")
 
+
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_pre_ping": True,
+    "connect_args": {
+        "sslmode": "require",
+        "sslcompression": 0
+        # If your DB requires a CA cert, also add:
+        # "sslrootcert": os.getenv("SSL_ROOT_CERT_PATH")
+    }
+}
+
 # Initialize extensions
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
@@ -94,8 +105,8 @@ register_blueprints(app)
 from app import models
 
 # Create database tables within application context
-with app.app_context():
-    db.create_all()
+#with app.app_context():
+    #db.create_all()
 
 # Import SocketIO event handlers
 from app import socket_events
