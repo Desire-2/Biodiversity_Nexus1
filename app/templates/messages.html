@@ -133,7 +133,7 @@
         color: var(--text-dark);
     }
 
-    /* Tabs */
+        /* Tabs */
     .sidebar-tabs {
         display: flex;
         border-bottom: 1px solid #e1e1e1;
@@ -618,7 +618,8 @@
         50% { transform: translateY(-5px); }
     }
 
-    /* Mobile Bottom Navigation */
+
+        /* Mobile Bottom Navigation */
     .mobile-bottom-nav {
         position: fixed;
         bottom: 0;
@@ -887,219 +888,281 @@
         align-items: center;
         justify-content: center;
     }
+
+    /* Toast Notification */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+
+    .toast {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        padding: 15px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        animation: slideIn 0.3s ease-out forwards;
+        max-width: 350px;
+        opacity: 0;
+        transform: translateX(100%);
+    }
+
+    @keyframes slideIn {
+        to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes slideOut {
+        to { opacity: 0; transform: translateX(100%); }
+    }
+
+    .toast.hide {
+        animation: slideOut 0.3s ease-in forwards;
+    }
+
+    .toast-icon {
+        margin-right: 12px;
+        font-size: 20px;
+    }
+
+    .toast-content {
+        flex-grow: 1;
+    }
+
+    .toast-title {
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: var(--text-dark);
+    }
+
+    .toast-message {
+        font-size: 14px;
+        color: var(--text-secondary);
+    }
+
+    .toast-close {
+        color: var(--text-secondary);
+        background: none;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+        padding: 0;
+        margin-left: 10px;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="chat-container">
-  <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
-    <!-- Sidebar Header -->
-    <div class="sidebar-header">
-      <img src="../static/uploads/avatar.jpg" alt="My Profile">
-      <div class="user-info">
-          {{ current_user.username }}
-      </div>
-      <div class="icons">
-        <a href="{{ url_for('messages.manage_connections') }}" title="Manage Connections"><i class="fas fa-user-friends"></i></a>
-        <a href="{{ url_for('messages.view_notifications') }}" title="Notifications" style="position: relative;">
-            <i class="fas fa-bell"></i>
-            {% if unread_notification_count > 0 %}
-                <span class="notification-badge">{{ unread_notification_count }}</span>
-            {% endif %}
-        </a>
-        <a href="#" id="settings-toggle" title="Settings"><i class="fas fa-cog"></i></a>
-      </div>
-    </div>
-    
-    <!-- Search Bar -->
-    <div class="search-container">
-        <div class="search-box">
-            <i class="fas fa-search"></i>
-            <input type="text" placeholder="Search or start new chat" id="search-input">
-        </div>
-    </div>
-
-    <!-- Sidebar Tabs -->
-    <div class="sidebar-tabs">
-        <div class="sidebar-tab active" data-tab="chats">
-            <i class="fas fa-comment-alt"></i> 
-            <span class="desktop-only">Chats</span>
-        </div>
-        <div class="sidebar-tab" data-tab="discover">
-            <i class="fas fa-compass"></i> 
-            <span class="desktop-only">Discover</span>
-        </div>
-        <a href="{{ url_for('messages.manage_connections') }}" class="sidebar-tab" style="text-decoration: none;">
-            <i class="fas fa-user-plus"></i> 
-            <span class="desktop-only">Requests</span>
-        </a> 
-    </div>
-
-    <!-- Sidebar Content -->
-    <div class="sidebar-content">
-        <!-- Chats Panel -->
-        <div class="sidebar-panel active" id="panel-chats">
-            {% if conversations %}
-                {% for conv in conversations %}
-                <a href="{{ url_for('messages.messages_view', chat_with_id=conv.user.id) }}" class="chat-list-item {% if chat_with_user and chat_with_user.id == conv.user.id %}active{% endif %}" data-user-id="{{ conv.user.id }}">
-                    <img src="../static/uploads/avatar.jpg" alt="{{ conv.user.username }}">
-                    <div class="chat-info">
-                    <div class="name-time">
-                        <span class="name">{{ conv.user.username }}</span>
-                        <span class="time">{{ conv.last_message_time.strftime('%H:%M') if conv.last_message_time else '' }}</span>
-                    </div>
-                    <div class="last-message">
-                        <span>{{ conv.last_message_content | truncate(30) }}</span>
-                        {% if conv.unread_count > 0 %}
-                            <span class="unread-badge">{{ conv.unread_count }}</span>
-                        {% endif %}
-                    </div>
-                    </div>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../static/uploads/avatar.jpg" alt="My Profile">
+            <div class="user-info">{{ current_user.username }}</div>
+            <div class="icons">
+                <a href="{{ url_for('messages.view_notifications') }}" id="notification-icon">
+                    <i class="fas fa-bell"></i>
+                    {% if unread_notification_count > 0 %}
+                    <span class="notification-badge" id="notification-badge">{{ unread_notification_count }}</span>
+                    {% endif %}
                 </a>
-                {% endfor %}
-            {% else %}
-                <div class="no-chats-placeholder text-center py-5">
-                    <i class="fas fa-comment-alt" style="font-size: 48px; color: #d1d7db; margin-bottom: 15px;"></i>
-                    <p class="text-muted">No active chats yet</p>
-                    <p class="small text-muted">Start a conversation by connecting with others</p>
-                </div>
-            {% endif %}
-        </div>
-
-        <!-- Discover Panel -->
-        <div class="sidebar-panel" id="panel-discover">
-            <!-- Recommended Users -->
-            <div class="discover-section">
-                <h5><i class="fas fa-star"></i> Recommended</h5>
-                {% if recommended_users %}
-                    <div class="recommendations-list">
-                        {% for user in recommended_users %}
-                            <div class="user-list-item">
-                                <img src="../static/uploads/avatar.jpg" alt="{{ user.username }}">
-                                <div class="user-details">
-                                    <span class="name">{{ user.username }}</span>
-                                    <span class="status-text">Common interests: Nature, Conservation</span>
-                                </div>
-                                <form method="POST" action="{{ url_for('messages.send_connection_request', receiver_id=user.id) }}" style="display: inline;">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    <button type="submit" class="connect-button">Connect</button>
-                                </form>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <p class="text-muted small px-2">No recommendations right now.</p>
-                {% endif %}
+                <a href="{{ url_for('messages.manage_connections') }}">
+                    <i class="fas fa-users"></i>
+                </a>
+                <a href="#" id="settings-toggle" title="Settings"><i class="fas fa-cog"></i></a>
             </div>
-
-            <!-- All Discoverable Users -->
-            <div class="discover-section">
-                <h5><i class="fas fa-globe-americas"></i> Find More People</h5>
-                {% if discoverable_users_with_status %}
-                    {% for item in discoverable_users_with_status %}
-                        <div class="user-list-item">
-                            <img src="../static/uploads/avatar.jpg">
-                            <div class="user-details">
-                                <span class="name">{{ item.user.username }}</span>
-                                {% if item.status != 'not_connected' and item.status != 'rejected' and item.status != 'self' %}
-                                    <span class="status-text">
-                                        {% if item.status == 'connected' %}Connected{% endif %}
-                                        {% if item.status == 'request_sent' %}Request Sent{% endif %}
-                                        {% if item.status == 'request_received' %}Request Received{% endif %}
-                                        {% if item.status == 'blocked' %}Blocked{% endif %}
-                                    </span>
+        </div>
+        
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search or start new chat">
+            </div>
+        </div>
+        
+        <!-- Sidebar Tabs -->
+        <div class="sidebar-tabs">
+            <div class="sidebar-tab active" data-tab="chats">
+                <i class="fas fa-comment-alt"></i> 
+                <span class="desktop-only">Chats</span>
+            </div>
+            <div class="sidebar-tab" data-tab="discover">
+                <i class="fas fa-compass"></i> 
+                <span class="desktop-only">Discover</span>
+            </div>
+            <a href="{{ url_for('messages.manage_connections') }}" class="sidebar-tab" style="text-decoration: none;">
+                <i class="fas fa-user-plus"></i> 
+                <span class="desktop-only">Requests</span>
+            </a> 
+        </div>
+        
+        <div class="sidebar-content">
+            <!-- Chats Panel -->
+            <div class="sidebar-panel active" id="chats-panel">
+                {% if conversations %}
+                    {% for conv in conversations %}
+                    <a href="{{ url_for('messages.messages_view', chat_with_id=conv.user.id) }}" class="chat-list-item {% if chat_with_user and chat_with_user.id == conv.user.id %}active{% endif %}" data-user-id="{{ conv.user.id }}">
+                        <img src="../static/uploads/avatar.jpg" alt="My Profile">
+                        <div class="chat-info">
+                            <div class="name-time">
+                                <div class="name">{{ conv.user.username }}</div>
+                                <div class="time">
+                                    {% if conv.last_message_time %}
+                                        {{ conv.last_message_time|time_ago }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="last-message">
+                                <div>{{ conv.last_message_content }}</div>
+                                {% if conv.unread_count > 0 %}
+                                <div class="unread-badge">{{ conv.unread_count }}</div>
                                 {% endif %}
                             </div>
-                            {% if item.status == 'not_connected' or item.status == 'rejected' %}
-                                <form method="POST" action="{{ url_for('messages.send_connection_request', receiver_id=item.user.id) }}" style="display: inline;">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    <button type="submit" class="connect-button">Connect</button>
-                                </form>
-                            {% elif item.status == 'request_sent' %}
-                                <button class="connect-button disabled" disabled>Sent</button>
-                            {% elif item.status == 'request_received' %}
-                                <a href="{{ url_for('messages.manage_connections') }}" class="connect-button" style="background-color: #ffc107; color: #333; text-decoration:none;">Respond</a>
-                            {% elif item.status == 'connected' %}
-                                <button class="connect-button disabled" disabled style="background-color: #28a745;">Connected</button>
-                            {% endif %}
                         </div>
+                    </a>
                     {% endfor %}
                 {% else %}
-                    <p class="text-muted small px-2">No other users found to connect with.</p>
+                    <div class="empty-state" style="padding: 30px 20px; text-align: center;">
+                        <i class="fas fa-comments" style="font-size: 40px; color: #d1d7db; margin-bottom: 15px;"></i>
+                        <h4 style="margin-bottom: 10px; font-weight: 500;">No conversations yet</h4>
+                        <p style="color: var(--text-secondary); font-size: 14px;">Connect with people to start chatting</p>
+                    </div>
                 {% endif %}
+            </div>
+            
+            <!-- Discover Panel -->
+            <div class="sidebar-panel" id="discover-panel">
+                <!-- Recommended Users Section -->
+                <div class="discover-section">
+                    <h5><i class="fas fa-star"></i> Recommended for You</h5>
+                    {% if recommended_users %}
+                        {% for user in recommended_users %}
+                        <div class="user-list-item">
+                            <img src="../static/uploads/avatar.jpg" alt="My Profile">
+                            <div class="user-details">
+                                <div class="name">{{ user.username }}</div>
+                                <div class="status-text">{{ user.email }}</div>
+                            </div>
+                            <form method="POST" action="{{ url_for('messages.send_connection_request', receiver_id=user.id) }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="connect-button">
+                                    <i class="fas fa-user-plus"></i> Connect
+                                </button>
+                            </form>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div style="text-align: center; padding: 20px 0;">
+                            <p style="color: var(--text-secondary);">No recommendations available</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- All Users Section -->
+                <div class="discover-section">
+                    <h5><i class="fas fa-users"></i> Discover People</h5>
+                    {% if discoverable_users %}
+                        {% for item in discoverable_users %}
+                        <div class="user-list-item">
+                            <img src="../static/uploads/avatar.jpg" alt="My Profile">
+                            <div class="user-details">
+                                <div class="name">{{ item.user.username }}</div>
+                                <div class="status-text">{{ item.user.email }}</div>
+                            </div>
+                            {% if item.status == "not_connected" %}
+                            <form method="POST" action="{{ url_for('messages.send_connection_request', receiver_id=item.user.id) }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="connect-button">
+                                    <i class="fas fa-user-plus"></i> Connect
+                                </button>
+                            </form>
+                            {% elif item.status == "request_sent" %}
+                            <button class="connect-button disabled">
+                                <i class="fas fa-clock"></i> Pending
+                            </button>
+                            {% elif item.status == "request_received" %}
+                            <a href="{{ url_for('messages.manage_connections') }}" class="connect-button" style="background-color: var(--secondary-color);">
+                                <i class="fas fa-check"></i> Respond
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div style="text-align: center; padding: 20px 0;">
+                            <p style="color: var(--text-secondary);">No users available</p>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
-  </div>
-
-  <!-- Chat Area -->
-  <div class="chat-area {% if chat_with_user %}active{% endif %}" id="chat-area">
-    {% if chat_with_user %}
-      <!-- Chat Header -->
-      <div class="chat-header">
-        <a href="#" class="back-button d-md-none" id="back-to-sidebar"><i class="fas fa-arrow-left"></i></a>
-        <img src="../static/uploads/avatar.jpg" alt="{{ chat_with_user.username }}">
-        <div class="contact-info">
-          <div class="name">{{ chat_with_user.username }}</div>
-          <div class="status">Online</div>
-        </div>
-        <div class="header-icons">
-            <a href="#" title="Call"><i class="fas fa-phone-alt"></i></a>
-            <a href="#" title="Video Call"><i class="fas fa-video"></i></a>
-            <a href="#" title="More Options"><i class="fas fa-ellipsis-v"></i></a>
-        </div>
-      </div>
-
-      <!-- Messages -->
-      <div class="chat-messages" id="chat-messages">
-        {% for message in messages %}
-          <div class="message-row {{ 'sent' if message.sender_id == current_user.id else 'received' }}">
-            <div class="message-bubble">
-                <div class="message-content">{{ message.content }}</div>
-                <span class="message-meta">{{ message.date_sent.strftime('%H:%M') }}</span>
+    
+    <!-- Chat Area -->
+    <div class="chat-area {% if chat_with_user %}active{% endif %}" id="chat-area">
+        {% if chat_with_user %}
+            <div class="chat-header">
+                <a href="#" class="back-button" id="back-to-sidebar">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <img src="../static/uploads/avatar.jpg" alt="My Profile">
+                <div class="contact-info">
+                    <div class="name">{{ chat_with_user.username }}</div>
+                    <div class="status" id="typing-status">Online</div>
+                </div>
             </div>
-          </div>
-        {% endfor %}
-        
-        <!-- Typing indicator (example) -->
-        {% if chat_with_user and chat_with_user.id == 2 %}
-        <div class="message-row received">
-            <div class="typing-indicator">
-                <span></span>
-                <span></span>
-                <span></span>
+            
+            <div class="chat-messages" id="chat-messages">
+                {% for message in messages %}
+                    <div class="message-row {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}">
+                        <div class="message-bubble">
+                            <div class="message-content">{{ message.content }}</div>
+                            <span class="message-meta">{{ message.date_sent|time_ago }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+                <!-- Typing indicator (example) -->
+                {% if chat_with_user and chat_with_user.id == 2 %}
+                <div class="message-row received">
+                    <div class="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+                {% endif %}
             </div>
-        </div>
+            
+            <div class="chat-footer">
+                <div class="footer-icons">
+                    <i class="fas fa-smile"></i>
+                    <i class="fas fa-paperclip"></i>
+                </div>
+                <form id="message-form" method="POST" action="{{ url_for('messages.messages_view', chat_with_id=chat_with_user.id) }}">
+                    {{ form.hidden_tag() }}
+                    {{ form.content(class="form-control", placeholder="Type a message", id="message-input", autocomplete="off") }}
+                    <button type="submit" id="send-button">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        {% else %}
+            <div class="no-chat-selected">
+                <img src="{{ url_for('static', filename='img/chat-placeholder.svg') }}" alt="Select a chat" onerror="this.src='https://via.placeholder.com/250x200?text=Select+a+chat'">
+                <h4>Select a conversation</h4>
+                <p>Choose from your existing conversations or start a new one by connecting with people.</p>
+                <a href="#" class="connect-button" id="discover-button">
+                    <i class="fas fa-compass"></i> Discover People
+                </a>
+            </div>
         {% endif %}
-      </div>
-
-      <!-- Message Input Form -->
-      <div class="chat-footer">
-         <div class="footer-icons">
-             <i class="far fa-grin" id="emoji-trigger"></i>
-             <i class="fas fa-paperclip" id="attachment-trigger"></i>
-         </div>
-        <form method="POST" action="{{ url_for('messages.messages_view', chat_with_id=chat_with_user.id) }}" style="display: flex; flex-grow: 1; align-items: center;">
-          {{ form.hidden_tag() }}
-          {{ form.content(class="form-control", placeholder="Type a message...", autocomplete="off", rows="1") }}
-          <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
-        </form>
-      </div>
-
-    {% else %}
-      <!-- No Chat Selected Placeholder -->
-      <div class="no-chat-selected">
-          <img src="https://cdn-icons-png.flaticon.com/512/4210/4210933.png" alt="Connect">
-          <h4>Keep your connection active</h4>
-          <p>Select a chat to start messaging or discover new people in the Biodiversity community.</p>
-          <div class="tips">
-              <p><i class="fas fa-lightbulb"></i> Tip: You can search for users by name or interest</p>
-          </div>
-      </div>
-    {% endif %}
-  </div>
+    </div>
 </div>
+
+<!-- Toast Notification Container -->
+<div class="toast-container" id="toast-container"></div>
 
 <!-- Mobile Bottom Navigation -->
 <nav class="mobile-bottom-nav">
@@ -1107,10 +1170,10 @@
         <i class="fas fa-comment-alt"></i>
         <span>Chats</span>
     </a>
-    <a href="#" class="mobile-nav-item" data-target="discover">
+    <div class="mobile-nav-item" data-tab="discover">
         <i class="fas fa-compass"></i>
-        <span>Discover</span>
-    </a>
+        <span class="desktop-only">Discover</span>
+    </div> 
     <a href="{{ url_for('messages.manage_connections') }}" class="mobile-nav-item">
         <i class="fas fa-user-plus"></i>
         <span>Requests</span>
@@ -1120,247 +1183,672 @@
         <span>Profile</span>
     </a>
 </nav>
-{% endblock %}
+<!-- Socket.IO JS -->
+<script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
 
-{% block scripts %}
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const sidebar = document.getElementById('sidebar');
-    const chatArea = document.getElementById('chat-area');
-    const chatMessages = document.getElementById('chat-messages');
-    const backButton = document.getElementById('back-to-sidebar');
-    const messageInput = document.querySelector('.chat-footer .form-control');
-    const tabs = document.querySelectorAll('.sidebar-tab');
-    const panels = document.querySelectorAll('.sidebar-panel');
-    const chatListItems = document.querySelectorAll('.chat-list-item');
-    const baseMessagesUrl = "{{ url_for('messages.messages_view') }}";
-    const searchInput = document.getElementById('search-input');
-
-    // Auto-scroll to bottom of messages
-    function scrollToBottom() {
-        if (chatMessages) {
-            setTimeout(() => {
-                 chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, 100);
+    document.addEventListener('DOMContentLoaded', function() {
+        // Socket.IO Connection
+        const socket = io();
+        
+        // DOM Elements
+        const baseMessagesUrl = "{{ url_for('messages.messages_view') }}";
+        const chatListItems = document.querySelectorAll('.chat-list-item');
+        const panels = document.querySelectorAll('.sidebar-panel');
+        const backButton = document.getElementById('back-to-sidebar');
+        const chatArea = document.getElementById('chat-area');
+        const sidebar = document.getElementById('sidebar');
+        const messageForm = document.getElementById('message-form');
+        const messageInput = document.getElementById('message-input');
+        const chatMessages = document.getElementById('chat-messages');
+        const typingStatus = document.getElementById('typing-status');
+        const notificationBadge = document.getElementById('notification-badge');
+        const toastContainer = document.getElementById('toast-container');
+        const tabs = document.querySelectorAll('.sidebar-tab');
+        const searchInput = document.getElementById('search-input');
+        
+        // Auto-scroll to bottom of messages
+        function scrollToBottom() {
+            if (chatMessages) {
+                setTimeout(() => {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 100);
+            }
         }
-    }
-    
-    // Scroll on initial load if a chat is active
-    if (chatArea && chatArea.classList.contains('active')) {
-        scrollToBottom();
-    }
 
-    // Sidebar Tab Switching
-    tabs.forEach(tab => {
-      tab.addEventListener('click', function(event) {
-        if (this.tagName === 'A' && this.getAttribute('href') === '#') {
-            event.preventDefault();
+        // Scroll on initial load if a chat is active
+        if (chatArea && chatArea.classList.contains('active')) {
+            scrollToBottom();
+        }
+        // Current chat info
+        {% if chat_with_user %}
+        const currentChatUserId = {{ chat_with_user.id }};
+        const currentUserId = {{ current_user.id }};
+        // Generate a consistent room ID for this chat (smaller ID first)
+        const roomId = currentUserId < currentChatUserId 
+            ? `chat_${currentUserId}_${currentChatUserId}` 
+            : `chat_${currentChatUserId}_${currentUserId}`;
+        {% else %}
+        const currentChatUserId = null;
+        const currentUserId = {{ current_user.id }};
+        const roomId = null;
+        {% endif %}
+
+        // Debounce function for typing detection
+        function debounce(func, wait) {
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(debounceTimeout);
+                    func(...args);
+                };
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(later, wait);
+            };
+        };
+        
+        // Connect to Socket.IO
+        socket.on('connect', function() {
+            console.log('Connected to Socket.IO server');
+            
+            // Join personal notification room
+            socket.emit('join', { room: currentUserId.toString() });
+            
+            // Join chat room if in a chat
+            if (roomId) {
+                socket.emit('join_chat_room', { room_id: roomId });
+            }
+        });
+        
+        // Handle new messages
+        socket.on('new_message', function(data) {
+            // Create message element
+            const messageRow = document.createElement('div');
+            messageRow.className = `message-row ${data.sender_id === currentUserId ? 'sent' : 'received'}`;
+            
+            const messageBubble = document.createElement('div');
+            messageBubble.className = 'message-bubble';
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.textContent = data.content;
+            
+            const messageMeta = document.createElement('span');
+            messageMeta.className = 'message-meta';
+            messageMeta.textContent = 'Just now';
+            
+            messageBubble.appendChild(messageContent);
+            messageBubble.appendChild(messageMeta);
+            messageRow.appendChild(messageBubble);
+            
+            // Add to chat
+            chatMessages.appendChild(messageRow);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Play sound for received messages
+            if (data.sender_id !== currentUserId) {
+                playMessageSound();
+            }
+        });
+        
+        // Handle typing status
+        socket.on('typing_status', function(data) {
+            if (data.is_typing) {
+                typingStatus.textContent = `${data.sender_username} is typing...`;
+                
+                // Show typing indicator
+                const typingIndicator = document.createElement('div');
+                typingIndicator.className = 'typing-indicator';
+                typingIndicator.id = 'typing-indicator';
+                
+                for (let i = 0; i < 3; i++) {
+                    const dot = document.createElement('span');
+                    typingIndicator.appendChild(dot);
+                }
+                
+                // Remove existing indicator if any
+                const existingIndicator = document.getElementById('typing-indicator');
+                if (existingIndicator) {
+                    existingIndicator.remove();
+                }
+                
+                chatMessages.appendChild(typingIndicator);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            } else {
+                typingStatus.textContent = 'Online';
+                
+                // Remove typing indicator
+                const existingIndicator = document.getElementById('typing-indicator');
+                if (existingIndicator) {
+                    existingIndicator.remove();
+                }
+            }
+        });
+        
+        // Handle new notifications
+        socket.on('new_notification', function(data) {
+            // Update notification badge
+            let count = notificationBadge ? parseInt(notificationBadge.textContent || '0') : 0;
+            count++;
+            
+            // Update or create badge
+            if (!notificationBadge) {
+                const newBadge = document.createElement('span');
+                newBadge.className = 'notification-badge';
+                newBadge.id = 'notification-badge';
+                newBadge.textContent = count;
+                document.getElementById('notification-icon').appendChild(newBadge);
+            } else {
+                notificationBadge.textContent = count;
+            }
+            
+            // Show toast notification
+            showToast(data.type === 'new_message' ? 'New Message' : 'New Notification', data.content);
+            
+            // Play notification sound
+            playNotificationSound();
+            
+            // Show browser notification if permission granted
+            showBrowserNotification(data.type === 'new_message' ? 'New Message' : 'New Notification', data.content);
+        });
+        
+        // Handle message form submission
+        if (messageForm) {
+            messageForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const content = messageInput.value.trim();
+                if (!content) return;
+                
+                // Emit message via Socket.IO
+                socket.emit('send_message', {
+                    recipient_id: currentChatUserId,
+                    content: content,
+                    room_id: roomId
+                });
+                
+                // Clear input
+                messageInput.value = '';
+                
+                // Reset typing status
+                socket.emit('typing', {
+                    recipient_id: currentChatUserId,
+                    room_id: roomId,
+                    is_typing: false
+                });
+            });
         }
         
-        if (this.dataset.tab) {
-            const targetPanelId = 'panel-' + this.dataset.tab;
+        // Handle typing events
+        if (messageInput) {
+            let typingTimeout;
             
-            // Update tab active state
-            tabs.forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-            
-            // Update panel active state
-            panels.forEach(panel => {
-                panel.classList.toggle('active', panel.id === targetPanelId);
+            messageInput.addEventListener('input', function() {
+                // Clear previous timeout
+                clearTimeout(typingTimeout);
+                
+                // Emit typing status
+                socket.emit('typing', {
+                    recipient_id: currentChatUserId,
+                    room_id: roomId,
+                    is_typing: true
+                });
+                
+                // Set timeout to stop typing status after 2 seconds of inactivity
+                typingTimeout = setTimeout(function() {
+                    socket.emit('typing', {
+                        recipient_id: currentChatUserId,
+                        room_id: roomId,
+                        is_typing: false
+                    });
+                }, 2000);
             });
-            // Scroll to top of sidebar content
-            document.querySelector('.sidebar-content').scrollTop = 0;
         }
-      });
-    });
+        
+                // Tab switching with lazy loading
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function(event) {
+                if (this.tagName === 'A' && this.getAttribute('href') === '#') {
+                    event.preventDefault();
+                }
+                        
+                if (this.dataset.tab) {
+                    const targetPanelId = this.dataset.tab + '-panel';
+                            
+                    // Update tab active state
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                            
+                    // Update panel active state
+                    panels.forEach(panel => {
+                        panel.classList.toggle('active', panel.id === targetPanelId);
+                    });
+                    
+                    // Lazy load discover tab
+                    if (this.dataset.tab === 'discover' && !this.dataset.loaded) {
+                        this.dataset.loaded = true;
+                        loadDiscoverData();
+                    }
+                    
+                    // Scroll to top of sidebar content
+                    document.querySelector('.sidebar-content').scrollTop = 0;
+                }
+            });
+        });
 
-    // Mobile View: Activate Chat Area on Chat Click
-    chatListItems.forEach(item => {
-        item.addEventListener('click', function(event) {
-            if (window.innerWidth <= 768) {
-                 event.preventDefault(); // Prevent default link navigation
-                 
-                 // Show loading state in chat area
-                 chatArea.innerHTML = `
-                    <div class="chat-header">
-                        <a href="#" class="back-button" id="back-to-sidebar"><i class="fas fa-arrow-left"></i></a>
-                        <div class="d-flex align-items-center">
-                            <div class="skeleton-avatar"></div>
-                            <div class="contact-info">
-                                <div class="skeleton-name"></div>
-                                <div class="skeleton-status"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="loading-messages">
+        // Load discover data
+        async function loadDiscoverData() {
+            try {
+                // Show loading state
+                const panel = document.getElementById('discover-panel');
+                panel.innerHTML = `
+                    <div class="text-center py-5">
                         <div class="spinner-border text-primary" role="status">
                             <span class="sr-only">Loading...</span>
                         </div>
+                        <p class="mt-2">Loading recommendations</p>
                     </div>
-                 `;
-                 
-                 // Apply transition classes
-                 sidebar.classList.add('chat-active');
-                 chatArea.classList.add('active');
-                 
-                 // Get the target URL
-                 const chatUrl = this.href;
-                 
-                 // Navigate after delay
-                 setTimeout(() => {
-                     window.location.href = chatUrl;
-                 }, 300);
-            }
-        });
-    });
-
-    // Mobile View: Back Button Functionality
-    if (backButton) {
-        backButton.addEventListener('click', function(event) {
-            event.preventDefault();
-            sidebar.classList.remove('chat-active');
-            chatArea.classList.remove('active');
-            window.history.pushState({ view: 'sidebar' }, '', baseMessagesUrl);
-        });
-    }
-
-    // Handle browser back button
-    window.addEventListener('popstate', function(event) {
-        if (window.innerWidth <= 768) {
-            if (window.location.pathname === new URL(baseMessagesUrl).pathname) {
-                 sidebar.classList.remove('chat-active');
-                 chatArea.classList.remove('active');
+                `;
+                
+                // Simulate API call (in real app, fetch from server)
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                // Render actual content
+                panel.innerHTML = `
+                    <!-- Recommended Users Section -->
+                    <div class="discover-section">
+                        <h5><i class="fas fa-star"></i> Recommended for You</h5>
+                        {% if recommended_users %}
+                            {% for user in recommended_users %}
+                            <div class="user-list-item">
+                                <img src="../static/uploads/avatar.jpg" alt="My Profile">
+                                <div class="user-details">
+                                    <div class="name">{{ user.username }}</div>
+                                    <div class="status-text">{{ user.email }}</div>
+                                </div>
+                                <form method="POST" action="{{ url_for('messages.send_connection_request', receiver_id=user.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="connect-button">
+                                        <i class="fas fa-user-plus"></i> Connect
+                                    </button>
+                                </form>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div style="text-align: center; padding: 20px 0;">
+                                <p style="color: var(--text-secondary);">No recommendations available</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- All Users Section -->
+                    <div class="discover-section">
+                        <h5><i class="fas fa-users"></i> Discover People</h5>
+                        {% if discoverable_users %}
+                            {% for item in discoverable_users %}
+                            <div class="user-list-item">
+                                <img src="../static/uploads/avatar.jpg" alt="My Profile">
+                                <div class="user-details">
+                                    <div class="name">{{ item.user.username }}</div>
+                                    <div class="status-text">{{ item.user.email }}</div>
+                                </div>
+                                {% if item.status == "not_connected" %}
+                                <form method="POST" action="{{ url_for('messages.send_connection_request', receiver_id=item.user.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="connect-button">
+                                        <i class="fas fa-user-plus"></i> Connect
+                                    </button>
+                                </form>
+                                {% elif item.status == "request_sent" %}
+                                <button class="connect-button disabled">
+                                    <i class="fas fa-clock"></i> Pending
+                                </button>
+                                {% elif item.status == "request_received" %}
+                                <a href="{{ url_for('messages.manage_connections') }}" class="connect-button" style="background-color: var(--secondary-color);">
+                                    <i class="fas fa-check"></i> Respond
+                                </a>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div style="text-align: center; padding: 20px 0;">
+                                <p style="color: var(--text-secondary);">No users available</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Failed to load discover data:', error);
+                showToast('Error', 'Failed to load discover data');
             }
         }
-    });
 
-    // Auto-resize message input textarea
-    function autoResizeTextarea() {
-        if(messageInput) {
-            messageInput.style.height = 'auto';
-            let scrollHeight = messageInput.scrollHeight;
-            let maxHeight = 100;
-            if (scrollHeight > maxHeight) {
-                messageInput.style.height = maxHeight + 'px';
-                messageInput.style.overflowY = 'auto';
-            } else {
-                messageInput.style.height = scrollHeight + 'px';
-                messageInput.style.overflowY = 'hidden';
-            }
-        }
-    }
 
-    if(messageInput) {
-        messageInput.addEventListener('input', autoResizeTextarea);
-        autoResizeTextarea(); 
-    }
+        // Mobile View: Activate Chat Area on Chat Click
+        chatListItems.forEach(item => {
+            item.addEventListener('click', function(event) {
+                if (window.innerWidth <= 768) {
+                    event.preventDefault(); // Prevent default link navigation
+                    
+                    // Show loading state in chat area
+                    chatArea.innerHTML = `
+                        <div class="chat-header">
+                            <a href="#" class="back-button" id="back-to-sidebar"><i class="fas fa-arrow-left"></i></a>
+                            <div class="d-flex align-items-center">
+                                <div class="skeleton-avatar"></div>
+                                <div class="contact-info">
+                                    <div class="skeleton-name"></div>
+                                    <div class="skeleton-status"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="loading-messages">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Apply transition classes
+                    sidebar.classList.add('chat-active');
+                    chatArea.classList.add('active');
+                    
+                    // Get the target URL
+                    const chatUrl = this.href;
+                    
+                    // Navigate after delay
+                    setTimeout(() => {
+                        window.location.href = chatUrl;
+                    }, 300);
+                }
+            });
+        });
 
-    // Handle form submission via Enter key
-    if (messageInput) {
-        messageInput.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
+        // Mobile View: Back Button Functionality
+        if (backButton) {
+            backButton.addEventListener('click', function(event) {
                 event.preventDefault();
-                const form = messageInput.closest('form');
-                if (form) {
-                    const submitButton = form.querySelector('button[type="submit"]');
-                    if (submitButton) {
-                        submitButton.click();
+                sidebar.classList.remove('chat-active');
+                chatArea.classList.remove('active');
+                window.history.pushState({ view: 'sidebar' }, '', baseMessagesUrl);
+            });
+        }
+
+        // Handle browser back button
+        window.addEventListener('popstate', function(event) {
+            if (window.innerWidth <= 768) {
+                if (window.location.pathname === new URL(baseMessagesUrl).pathname) {
+                    sidebar.classList.remove('chat-active');
+                    chatArea.classList.remove('active');
+                }
+            }
+        });
+
+        // Auto-resize message input textarea
+        function autoResizeTextarea() {
+            if(messageInput) {
+                messageInput.style.height = 'auto';
+                let scrollHeight = messageInput.scrollHeight;
+                let maxHeight = 100;
+                if (scrollHeight > maxHeight) {
+                    messageInput.style.height = maxHeight + 'px';
+                    messageInput.style.overflowY = 'auto';
+                } else {
+                    messageInput.style.height = scrollHeight + 'px';
+                    messageInput.style.overflowY = 'hidden';
+                }
+            }
+        }
+
+        if(messageInput) {
+            messageInput.addEventListener('input', autoResizeTextarea);
+            autoResizeTextarea(); 
+        }
+        
+        // Utility Functions
+        function showToast(title, message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close">&times;</button>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            // Animate in
+            setTimeout(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // Auto dismiss after 5 seconds
+            setTimeout(() => {
+                toast.classList.add('hide');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 5000);
+            
+            // Close button
+            toast.querySelector('.toast-close').addEventListener('click', function() {
+                toast.classList.add('hide');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            });
+        }
+        
+        function playMessageSound() {
+            const audio = new Audio('/static/sounds/message.mp3');
+            audio.volume = 0.5;
+            audio.play().catch(e => console.log('Error playing sound:', e));
+        }
+        
+        function playNotificationSound() {
+            const audio = new Audio('/static/sounds/notification.mp3');
+            audio.volume = 0.5;
+            audio.play().catch(e => console.log('Error playing sound:', e));
+        }
+        
+        function showBrowserNotification(title, body) {
+            // Check if browser supports notifications
+            if (!("Notification" in window)) {
+                console.log("This browser does not support desktop notification");
+                return;
+            }
+            
+            // Check if permission is already granted
+            if (Notification.permission === "granted") {
+                createNotification(title, body);
+            }
+            // Otherwise, ask for permission
+            else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(function (permission) {
+                    if (permission === "granted") {
+                        createNotification(title, body);
+                    }
+                });
+            }
+        }
+
+            // Search functionality
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const chatItems = document.querySelectorAll('.chat-list-item');
+                let hasResults = false;
+                
+                chatItems.forEach(item => {
+                    const name = item.querySelector('.name').textContent.toLowerCase();
+                    if (name.includes(searchTerm)) {
+                        item.style.display = 'flex';
+                        hasResults = true;
                     } else {
-                        form.submit();
+                        item.style.display = 'none';
+                    }
+                });
+                
+                // Show no results message
+                const noResults = document.querySelector('.no-results-message');
+                if (!hasResults) {
+                    if (!noResults) {
+                        const noResultsMsg = document.createElement('div');
+                        noResultsMsg.classList.add('no-results-message', 'text-center', 'py-4');
+                        noResultsMsg.innerHTML = `<i class="fas fa-search mb-2"></i><p>No conversations found</p>`;
+                        document.querySelector('.sidebar-content').appendChild(noResultsMsg);
+                    }
+                } else if (noResults) {
+                    noResults.remove();
+                }
+            });
+        }
+        
+        // Simulate online status changes
+        setInterval(() => {
+            const statusEl = document.querySelector('.status');
+            if (statusEl) {
+                const statuses = ['Online', 'Online', 'Online', 'Typing...'];
+                statusEl.textContent = statuses[Math.floor(Math.random() * statuses.length)];
+            }
+        }, 5000);
+
+        // Initialize the chat area if we're on mobile with a chat open
+        if (window.innerWidth <= 768 && document.querySelector('.chat-area.active')) {
+            sidebar.classList.add('chat-active');
+        }
+
+        // Mobile: Close keyboard when scrolling
+        if ('ontouchstart' in window) {
+            let initialTouchY = 0;
+            
+            window.addEventListener('touchstart', function(e) {
+                initialTouchY = e.touches[0].clientY;
+            }, { passive: true });
+            
+            window.addEventListener('touchmove', function(e) {
+                const currentTouchY = e.touches[0].clientY;
+                
+                // If user is scrolling up
+                if (currentTouchY > initialTouchY + 10) {
+                    // Blur active input to hide keyboard
+                    if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+                        document.activeElement.blur();
                     }
                 }
-            }
-        });
-    }
+                initialTouchY = currentTouchY;
+            }, { passive: true });
+        }
 
-    // Mobile bottom navigation
-    const mobileNavItems = document.querySelectorAll('.mobile-nav-item');
-    mobileNavItems.forEach(item => {
-        if (item.dataset.target) {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = this.dataset.target;
-                
-                // Remove active class from all items
-                mobileNavItems.forEach(i => i.classList.remove('active'));
-                // Add active class to clicked item
-                this.classList.add('active');
-                
-                // Show the corresponding panel
-                tabs.forEach(t => t.classList.remove('active'));
-                document.querySelector(`.sidebar-tab[data-tab="${target}"]`).click();
+        // Utility Functions
+        function showToast(title, message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close">&times;</button>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            // Animate in
+            setTimeout(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // Auto dismiss after 5 seconds
+            setTimeout(() => {
+                toast.classList.add('hide');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 5000);
+            
+            // Close button
+            toast.querySelector('.toast-close').addEventListener('click', function() {
+                toast.classList.add('hide');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
             });
+        }
+        
+        function playMessageSound() {
+            const audio = new Audio('/static/sounds/message.mp3');
+            audio.volume = 0.5;
+            audio.play().catch(e => console.log('Error playing sound:', e));
+        }
+        
+        function playNotificationSound() {
+            const audio = new Audio('/static/sounds/notification.mp3');
+            audio.volume = 0.5;
+            audio.play().catch(e => console.log('Error playing sound:', e));
+        }
+        
+        function showBrowserNotification(title, body) {
+            // Check if browser supports notifications
+            if (!("Notification" in window)) {
+                console.log("This browser does not support desktop notification");
+                return;
+            }
+            
+            // Check if permission is already granted
+            if (Notification.permission === "granted") {
+                createNotification(title, body);
+            }
+            // Otherwise, ask for permission
+            else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(function (permission) {
+                    if (permission === "granted") {
+                        createNotification(title, body);
+                    }
+                });
+            }
+        }
+        
+        function createNotification(title, body) {
+            const notification = new Notification(title, {
+                body: body,
+                icon: '/static/img/logo.png'
+            });
+            
+            notification.onclick = function() {
+                window.focus();
+                notification.close();
+            };
+            
+            // Auto close after 5 seconds
+            setTimeout(() => {
+                notification.close();
+            }, 5000);
+        }
+        
+        // Request notification permission on page load
+        if ("Notification" in window && Notification.permission !== "denied") {
+            Notification.requestPermission();
+        }
+        
+        // Scroll chat to bottom on load
+        if (chatMessages) {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
     });
-
-    // Search functionality
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const chatItems = document.querySelectorAll('.chat-list-item');
-            let hasResults = false;
-            
-            chatItems.forEach(item => {
-                const name = item.querySelector('.name').textContent.toLowerCase();
-                if (name.includes(searchTerm)) {
-                    item.style.display = 'flex';
-                    hasResults = true;
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-            
-            // Show no results message
-            const noResults = document.querySelector('.no-results-message');
-            if (!hasResults) {
-                if (!noResults) {
-                    const noResultsMsg = document.createElement('div');
-                    noResultsMsg.classList.add('no-results-message', 'text-center', 'py-4');
-                    noResultsMsg.innerHTML = `<i class="fas fa-search mb-2"></i><p>No conversations found</p>`;
-                    document.querySelector('.sidebar-content').appendChild(noResultsMsg);
-                }
-            } else if (noResults) {
-                noResults.remove();
-            }
-        });
-    }
-    
-    // Simulate online status changes
-    setInterval(() => {
-        const statusEl = document.querySelector('.status');
-        if (statusEl) {
-            const statuses = ['Online', 'Online', 'Online', 'Typing...'];
-            statusEl.textContent = statuses[Math.floor(Math.random() * statuses.length)];
-        }
-    }, 5000);
-
-    // Initialize the chat area if we're on mobile with a chat open
-    if (window.innerWidth <= 768 && document.querySelector('.chat-area.active')) {
-        sidebar.classList.add('chat-active');
-    }
-
-    // Mobile: Close keyboard when scrolling
-    if ('ontouchstart' in window) {
-        let initialTouchY = 0;
-        
-        window.addEventListener('touchstart', function(e) {
-            initialTouchY = e.touches[0].clientY;
-        }, { passive: true });
-        
-        window.addEventListener('touchmove', function(e) {
-            const currentTouchY = e.touches[0].clientY;
-            
-            // If user is scrolling up
-            if (currentTouchY > initialTouchY + 10) {
-                // Blur active input to hide keyboard
-                if (document.activeElement && document.activeElement.tagName === 'INPUT') {
-                    document.activeElement.blur();
-                }
-            }
-            initialTouchY = currentTouchY;
-        }, { passive: true });
-    }
-
-  });
 </script>
 {% endblock %}
+

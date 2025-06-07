@@ -21,7 +21,7 @@
     .connections-container {
         max-width: 900px;
         margin: 0 auto;
-        padding: 20px;
+        padding: 15px;
     }
     
     .section-title {
@@ -29,6 +29,7 @@
         padding-left: 15px;
         margin-bottom: 25px;
         font-weight: 600;
+        font-size: 1.5rem;
     }
     
     .section-title:before {
@@ -45,17 +46,28 @@
     
     .connections-tabs {
         display: flex;
-        margin-bottom: 30px;
+        margin-bottom: 25px;
         border-bottom: 1px solid var(--light-gray);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+    }
+    
+    .connections-tabs::-webkit-scrollbar {
+        display: none;
     }
     
     .tab {
-        padding: 12px 25px;
+        padding: 12px 20px;
         cursor: pointer;
         position: relative;
         font-weight: 500;
         transition: var(--transition);
         color: var(--gray);
+        white-space: nowrap;
+        flex-shrink: 0;
+        touch-action: manipulation;
     }
     
     .tab.active {
@@ -106,6 +118,7 @@
     
     .connection-card {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         padding: 20px;
         margin-bottom: 15px;
@@ -133,6 +146,8 @@
     
     .connection-info {
         flex-grow: 1;
+        min-width: 200px;
+        margin-bottom: 15px;
     }
     
     .connection-name {
@@ -140,6 +155,7 @@
         font-size: 18px;
         margin-bottom: 5px;
         color: var(--dark);
+        word-break: break-word;
     }
     
     .connection-meta {
@@ -147,6 +163,7 @@
         color: var(--gray);
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
     }
     
     .connection-meta i {
@@ -156,12 +173,13 @@
     .connection-actions {
         display: flex;
         gap: 10px;
+        width: 100%;
     }
     
     .action-btn {
         border: none;
         border-radius: 8px;
-        padding: 8px 15px;
+        padding: 10px 15px;
         font-size: 14px;
         font-weight: 500;
         cursor: pointer;
@@ -169,7 +187,9 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        min-width: 100px;
+        flex: 1;
+        min-width: 120px;
+        touch-action: manipulation;
     }
     
     .action-btn i {
@@ -265,6 +285,7 @@
         display: inline-flex;
         align-items: center;
         transition: var(--transition);
+        touch-action: manipulation;
     }
     
     .btn-discover:hover {
@@ -277,20 +298,103 @@
         margin-right: 8px;
     }
     
-    /* Responsive adjustments */
+    /* Enhanced Mobile Responsiveness */
     @media (max-width: 768px) {
+        .connections-container {
+            padding: 12px;
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+            padding-left: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 15px;
+            font-size: 14px;
+        }
+        
+        .tab-badge {
+            margin-left: 5px;
+        }
+        
+        .connection-card {
+            padding: 18px 15px;
+            flex-direction: row;
+            align-items: flex-start;
+        }
+        
+        .profile-img {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+            margin-bottom: 0;
+        }
+        
+        .connection-info {
+            flex: 1;
+            margin-bottom: 15px;
+        }
+        
+        .connection-name {
+            font-size: 17px;
+        }
+        
+        .connection-meta {
+            font-size: 13px;
+        }
+        
+        .connection-actions {
+            flex-direction: row;
+            gap: 8px;
+            width: 100%;
+        }
+        
+        .action-btn {
+            font-size: 13px;
+            padding: 9px 12px;
+            min-width: auto;
+        }
+        
+        .action-btn i {
+            margin-right: 5px;
+        }
+        
+        .empty-state {
+            padding: 30px 15px;
+        }
+        
+        .empty-state-icon {
+            font-size: 50px;
+        }
+        
+        .empty-state-title {
+            font-size: 1.2rem;
+        }
+        
+        .empty-state-text {
+            font-size: 14px;
+        }
+    }
+    
+    @media (max-width: 576px) {
         .connection-card {
             flex-direction: column;
+            align-items: center;
             text-align: center;
-            padding: 25px 15px;
+            padding: 20px 15px;
         }
         
         .profile-img {
             margin-right: 0;
             margin-bottom: 15px;
+            width: 70px;
+            height: 70px;
         }
         
         .connection-info {
+            text-align: center;
             margin-bottom: 15px;
         }
         
@@ -299,8 +403,47 @@
         }
         
         .connection-actions {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .action-btn {
             width: 100%;
-            justify-content: center;
+            padding: 12px;
+        }
+        
+        .tab {
+            padding: 10px 14px;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+        }
+    }
+    
+    @media (max-width: 400px) {
+        .tab {
+            padding: 8px 12px;
+            font-size: 13px;
+        }
+        
+        .tab-badge {
+            min-width: 18px;
+            height: 18px;
+            font-size: 11px;
+        }
+        
+        .connections-container {
+            padding: 10px;
+        }
+        
+        .connection-card {
+            padding: 18px 12px;
+        }
+        
+        .btn-discover {
+            padding: 10px 16px;
+            font-size: 14px;
         }
     }
 </style>
@@ -340,14 +483,15 @@
                         </div>
                     </div>
                     <div class="connection-actions">
-                        <form method="POST" action="{{ url_for('messages.handle_connection_action', connection_id=req.id, action='accept') }}" style="display: inline;">
+                        <form method="POST" action="{{ url_for('messages.handle_connection_action', connection_id=req.id, action='accept') }}" style="display: inline; width: 100%;">
                             <button type="submit" class="action-btn btn-accept">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <i class="fas fa-check"></i> Accept
                             </button>
                         </form>
-                        <form method="POST" action="{{ url_for('messages.handle_connection_action', connection_id=req.id, action='reject') }}" style="display: inline;">
+                        <form method="POST" action="{{ url_for('messages.handle_connection_action', connection_id=req.id, action='reject') }}" style="display: inline; width: 100%;">
                             <button type="submit" class="action-btn btn-reject">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <i class="fas fa-times"></i> Reject
                             </button>
                         </form>
@@ -386,7 +530,7 @@
                         <a href="{{ url_for('messages.messages_view', chat_with_id=user.id) }}" class="action-btn" style="background: var(--secondary); color: white;">
                             <i class="fas fa-comment"></i> Message
                         </a>
-                        <form method="POST" action="{{ url_for('messages.handle_connection_action', connection_id=user.id, action='remove') }}" style="display: inline;">
+                        <form method="POST" action="{{ url_for('messages.handle_connection_action', connection_id=user.id, action='remove') }}" style="display: inline; width: 100%;">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="action-btn btn-remove">
                                 <i class="fas fa-user-minus"></i> Remove
@@ -425,7 +569,7 @@
                         </div>
                     </div>
                     <div class="connection-actions">
-                        <form method="POST" action="{{ url_for('messages.handle_connection_action', connection_id=req.id, action='cancel') }}" style="display: inline;">
+                        <form method="POST" action="{{ url_for('messages.handle_connection_action', connection_id=req.id, action='cancel') }}" style="display: inline; width: 100%;">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="action-btn btn-cancel">
                                 <i class="fas fa-ban"></i> Cancel
@@ -468,6 +612,14 @@
                 // Show corresponding content
                 const tabId = this.getAttribute('data-tab');
                 document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+            
+            // Mobile-friendly touch handling
+            tab.addEventListener('touchend', function(e) {
+                if (window.innerWidth < 768) {
+                    e.preventDefault();
+                    this.click();
+                }
             });
         });
         
