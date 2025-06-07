@@ -1465,7 +1465,7 @@
                                 <img src="../static/uploads/avatar.jpg" alt="My Profile">
                                 <div class="user-details">
                                     <div class="name">{{ user.username }}</div>
-                                    <div class="status-text">{{ user.email }}</div>
+                                    
                                 </div>
                                 <form method="POST" action="{{ url_for('messages.send_connection_request', receiver_id=user.id) }}">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -1491,7 +1491,7 @@
                                 <img src="../static/uploads/avatar.jpg" alt="My Profile">
                                 <div class="user-details">
                                     <div class="name">{{ item.user.username }}</div>
-                                    <div class="status-text">{{ item.user.email }}</div>
+                                    
                                 </div>
                                 {% if item.status == "not_connected" %}
                                 <form method="POST" action="{{ url_for('messages.send_connection_request', receiver_id=item.user.id) }}">
