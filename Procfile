@@ -1,1 +1,4 @@
-web: gunicorn run:app
+web: gunicorn wsgi:app \
+        --worker-class eventlet \
+        --workers 1 \
+        --bind 0.0.0.0:$PORT

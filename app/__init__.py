@@ -46,7 +46,12 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 migrate = Migrate(app, db)
 mail = Mail(app)
-socketio = SocketIO(app)
+socketio = SocketIO(
+    app,
+    cors_allowed_origins="*",
+    ping_interval=25,   # how often to send pings
+    ping_timeout=60     # how long to wait for a pong
+)
 
 csrf = CSRFProtect()
 csrf.init_app(app)
