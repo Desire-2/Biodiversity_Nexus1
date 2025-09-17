@@ -1,0 +1,639 @@
+{% extends '_macros.html' %}
+{% block styles %}
+<style>
+    :root {
+        --primary: #2e8b57;
+        --primary-light: #3cb371;
+        --primary-dark: #2e7d32;
+        --secondary: #5d9cec;
+        --info: #3498db;
+        --success: #27ae60;
+        --warning: #f39c12;
+        --danger: #e74c3c;
+        --light: #f8f9fa;
+        --dark: #343a40;
+        --gray: #6c757d;
+        --light-gray: #e9ecef;
+        --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        --transition: all 0.3s ease;
+    }
+    
+    .connections-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 15px;
+    }
+    
+    .section-title {
+        position: relative;
+        padding-left: 15px;
+        margin-bottom: 25px;
+        font-weight: 600;
+        font-size: 1.5rem;
+    }
+    
+    .section-title:before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 80%;
+        width: 4px;
+        background: var(--primary);
+        border-radius: 2px;
+    }
+    
+    .connections-tabs {
+        display: flex;
+        margin-bottom: 25px;
+        border-bottom: 1px solid var(--light-gray);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+    }
+    
+    .connections-tabs::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .tab {
+        padding: 12px 20px;
+        cursor: pointer;
+        position: relative;
+        font-weight: 500;
+        transition: var(--transition);
+        color: var(--gray);
+        white-space: nowrap;
+        flex-shrink: 0;
+        touch-action: manipulation;
+    }
+    
+    .tab.active {
+        color: var(--primary);
+    }
+    
+    .tab.active:after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--primary);
+    }
+    
+    .tab-badge {
+        display: inline-block;
+        padding: 0 6px;
+        font-size: 12px;
+        min-width: 20px;
+        height: 20px;
+        border-radius: 10px;
+        background: var(--light-gray);
+        color: var(--gray);
+        margin-left: 8px;
+        text-align: center;
+    }
+    
+    .tab.active .tab-badge {
+        background: var(--primary);
+        color: white;
+    }
+    
+    .tab-content {
+        display: none;
+    }
+    
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.4s ease;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .connection-card {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: 20px;
+        margin-bottom: 15px;
+        border-radius: 12px;
+        background: white;
+        box-shadow: var(--card-shadow);
+        transition: var(--transition);
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .connection-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+    
+    .profile-img {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--light-gray);
+        margin-right: 20px;
+        flex-shrink: 0;
+    }
+    
+    .connection-info {
+        flex-grow: 1;
+        min-width: 200px;
+        margin-bottom: 15px;
+    }
+    
+    .connection-name {
+        font-weight: 600;
+        font-size: 18px;
+        margin-bottom: 5px;
+        color: var(--dark);
+        word-break: break-word;
+    }
+    
+    .connection-meta {
+        font-size: 14px;
+        color: var(--gray);
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .connection-meta i {
+        margin-right: 5px;
+    }
+    
+    .connection-actions {
+        display: flex;
+        gap: 10px;
+        width: 100%;
+    }
+    
+    .action-btn {
+        border: none;
+        border-radius: 8px;
+        padding: 10px 15px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        min-width: 120px;
+        touch-action: manipulation;
+    }
+    
+    .action-btn i {
+        margin-right: 7px;
+    }
+    
+    .btn-accept {
+        background: var(--success);
+        color: white;
+    }
+    
+    .btn-accept:hover {
+        background: #219653;
+    }
+    
+    .btn-reject {
+        background: var(--danger);
+        color: white;
+    }
+    
+    .btn-reject:hover {
+        background: #c0392b;
+    }
+    
+    .btn-cancel {
+        background: var(--warning);
+        color: white;
+    }
+    
+    .btn-cancel:hover {
+        background: #e67e22;
+    }
+    
+    .btn-remove {
+        background: var(--light-gray);
+        color: var(--dark);
+    }
+    
+    .btn-remove:hover {
+        background: #dee2e6;
+    }
+    
+    .status-badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+        margin-left: 10px;
+    }
+    
+    .badge-pending {
+        background: rgba(243, 156, 18, 0.15);
+        color: var(--warning);
+    }
+    
+    .badge-accepted {
+        background: rgba(39, 174, 96, 0.15);
+        color: var(--success);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+    }
+    
+    .empty-state-icon {
+        font-size: 60px;
+        color: #d1d7db;
+        margin-bottom: 20px;
+    }
+    
+    .empty-state-title {
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: var(--dark);
+    }
+    
+    .empty-state-text {
+        color: var(--gray);
+        max-width: 400px;
+        margin: 0 auto 20px;
+    }
+    
+    .btn-discover {
+        background: var(--primary);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        transition: var(--transition);
+        touch-action: manipulation;
+    }
+    
+    .btn-discover:hover {
+        background: var(--primary-dark);
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .btn-discover i {
+        margin-right: 8px;
+    }
+    
+    /* Enhanced Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .connections-container {
+            padding: 12px;
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+            padding-left: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 15px;
+            font-size: 14px;
+        }
+        
+        .tab-badge {
+            margin-left: 5px;
+        }
+        
+        .connection-card {
+            padding: 18px 15px;
+            flex-direction: row;
+            align-items: flex-start;
+        }
+        
+        .profile-img {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+            margin-bottom: 0;
+        }
+        
+        .connection-info {
+            flex: 1;
+            margin-bottom: 15px;
+        }
+        
+        .connection-name {
+            font-size: 17px;
+        }
+        
+        .connection-meta {
+            font-size: 13px;
+        }
+        
+        .connection-actions {
+            flex-direction: row;
+            gap: 8px;
+            width: 100%;
+        }
+        
+        .action-btn {
+            font-size: 13px;
+            padding: 9px 12px;
+            min-width: auto;
+        }
+        
+        .action-btn i {
+            margin-right: 5px;
+        }
+        
+        .empty-state {
+            padding: 30px 15px;
+        }
+        
+        .empty-state-icon {
+            font-size: 50px;
+        }
+        
+        .empty-state-title {
+            font-size: 1.2rem;
+        }
+        
+        .empty-state-text {
+            font-size: 14px;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .connection-card {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 20px 15px;
+        }
+        
+        .profile-img {
+            margin-right: 0;
+            margin-bottom: 15px;
+            width: 70px;
+            height: 70px;
+        }
+        
+        .connection-info {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .connection-meta {
+            justify-content: center;
+        }
+        
+        .connection-actions {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            width: 100%;
+            padding: 12px;
+        }
+        
+        .tab {
+            padding: 10px 14px;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+        }
+    }
+    
+    @media (max-width: 400px) {
+        .tab {
+            padding: 8px 12px;
+            font-size: 13px;
+        }
+        
+        .tab-badge {
+            min-width: 18px;
+            height: 18px;
+            font-size: 11px;
+        }
+        
+        .connections-container {
+            padding: 10px;
+        }
+        
+        .connection-card {
+            padding: 18px 12px;
+        }
+        
+        .btn-discover {
+            padding: 10px 16px;
+            font-size: 14px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="connections-container">
+    <h2 class="section-title">Manage Connections</h2>
+    
+    <div class="connections-tabs">
+        <div class="tab active" data-tab="incoming">
+            <i class="fas fa-inbox"></i> Incoming Requests
+            <span class="tab-badge">{{ incoming|length }}</span>
+        </div>
+        <div class="tab" data-tab="connections">
+            <i class="fas fa-users"></i> Your Connections
+            <span class="tab-badge">{{ connections|length }}</span>
+        </div>
+        <div class="tab" data-tab="outgoing">
+            <i class="fas fa-paper-plane"></i> Sent Requests
+            <span class="tab-badge">{{ outgoing|length }}</span>
+        </div>
+    </div>
+    
+    <!-- Incoming Requests Tab -->
+    <div class="tab-content active" id="incoming-tab">
+        {% if incoming %}
+            {% for req in incoming %}
+                <div class="connection-card">
+                    <img src="../static/uploads/avatar.jpg" 
+                         class="profile-img" 
+                         alt="{{ req.requester.username }}">
+                    <div class="connection-info">
+                        <div class="connection-name">{{ req.requester.username }}</div>
+                        <div class="connection-meta">
+                            <i class="fas fa-user-clock"></i> Sent {{ req.date_requested|time_ago }}
+                        </div>
+                    </div>
+                    <div class="connection-actions">
+                        <form method="POST" action="{{ url_for('messages.handle_connection_action', connection_id=req.id, action='accept') }}" style="display: inline; width: 100%;">
+                            <button type="submit" class="action-btn btn-accept">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <i class="fas fa-check"></i> Accept
+                            </button>
+                        </form>
+                        <form method="POST" action="{{ url_for('messages.handle_connection_action', connection_id=req.id, action='reject') }}" style="display: inline; width: 100%;">
+                            <button type="submit" class="action-btn btn-reject">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <h3 class="empty-state-title">No Incoming Requests</h3>
+                <p class="empty-state-text">You don't have any pending connection requests at the moment.</p>
+                <a href="{{ url_for('messages.messages_view') }}" class="btn-discover">
+                    <i class="fas fa-search"></i> Discover People
+                </a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Connections Tab -->
+    <div class="tab-content" id="connections-tab">
+        {% if connections %}
+            {% for user in connections %}
+                <div class="connection-card">
+                    <img src="../static/uploads/avatar.jpg" 
+                         class="profile-img" 
+                         alt="{{ user.username }}">
+                    <div class="connection-info">
+                        <div class="connection-name">{{ user.username }}</div>
+                        <div class="connection-meta">
+                            <i class="fas fa-envelope"></i> {{ user.email }}
+                        </div>
+                    </div>
+                    <div class="connection-actions">
+                        <a href="{{ url_for('messages.messages_view', chat_with_id=user.id) }}" class="action-btn" style="background: var(--secondary); color: white;">
+                            <i class="fas fa-comment"></i> Message
+                        </a>
+                        <form method="POST" action="{{ url_for('messages.handle_connection_action', connection_id=user.id, action='remove') }}" style="display: inline; width: 100%;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="action-btn btn-remove">
+                                <i class="fas fa-user-minus"></i> Remove
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-users-slash"></i>
+                </div>
+                <h3 class="empty-state-title">No Connections Yet</h3>
+                <p class="empty-state-text">You haven't connected with anyone yet. Start building your network!</p>
+                <a href="{{ url_for('messages.messages_view') }}" class="btn-discover">
+                    <i class="fas fa-search"></i> Discover People
+                </a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Outgoing Requests Tab -->
+    <div class="tab-content" id="outgoing-tab">
+        {% if outgoing %}
+            {% for req in outgoing %}
+                <div class="connection-card">
+                    <img src="../static/uploads/avatar.jpg" 
+                         class="profile-img" 
+                         alt="{{ req.receiver.username }}">
+                    <div class="connection-info">
+                        <div class="connection-name">{{ req.receiver.username }}</div>
+                        <div class="connection-meta">
+                            <i class="fas fa-paper-plane"></i> Sent {{ req.date_requested|time_ago }}
+                            <span class="status-badge badge-pending">Pending</span>
+                        </div>
+                    </div>
+                    <div class="connection-actions">
+                        <form method="POST" action="{{ url_for('messages.handle_connection_action', connection_id=req.id, action='cancel') }}" style="display: inline; width: 100%;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="action-btn btn-cancel">
+                                <i class="fas fa-ban"></i> Cancel
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+                <h3 class="empty-state-title">No Sent Requests</h3>
+                <p class="empty-state-text">You haven't sent any connection requests yet.</p>
+                <a href="{{ url_for('messages.messages_view') }}" class="btn-discover">
+                    <i class="fas fa-search"></i> Find People
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                // Show corresponding content
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+            
+            // Mobile-friendly touch handling
+            tab.addEventListener('touchend', function(e) {
+                if (window.innerWidth < 768) {
+                    e.preventDefault();
+                    this.click();
+                }
+            });
+        });
+        
+        // Add hover effects to buttons
+        const actionButtons = document.querySelectorAll('.action-btn');
+        actionButtons.forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05)';
+            });
+            
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    });
+</script>
+{% endblock %}

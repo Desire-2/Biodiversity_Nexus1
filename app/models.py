@@ -124,3 +124,38 @@ class ActivityLog(db.Model):
 
     def __repr__(self):
         return f"ActivityLog('{self.user.username}', '{self.action}', '{self.timestamp}')"
+
+# Connection Model
+class Connection(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    requester_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    # Status: 'pending', 'accepted', 'rejected', 'blocked'
+    status = db.Column(db.String(20), nullable=False, default='pending')
+    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    requester = db.relationship('User', foreign_keys=[requester_id], backref='sent_connections')
+    receiver = db.relationship('User', foreign_keys=[receiver_id], backref='received_connections')
+
+    __table_args__ = (db.UniqueConstraint('requester_id', 'receiver_id', name='_requester_receiver_uc'),)
+
+    def __repr__(self):
+        return f"<Connection {self.requester.username} -> {self.receiver.username} ({self.status})>"
+
+# Notification Model
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) # The user receiving the notification
+    # Type: 'connection_request', 'connection_accepted', 'new_message'
+    type = db.Column(db.String(50), nullable=False)
+    # related_id could be connection_id or sender_id for message
+    related_id = db.Column(db.Integer, nullable=True)
+    content = db.Column(db.String(255), nullable=False)
+    read_status = db.Column(db.Boolean, default=False, nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    user = db.relationship('User', backref='notifications')
+
+    def __repr__(self):
+        return f"<Notification for {self.user.username}: {self.content[:30]}...>"
+

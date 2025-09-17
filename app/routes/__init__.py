@@ -6,6 +6,7 @@ from app.routes.events import events
 from app.routes.admin import admin
 from app.routes.search import search
 from app.routes.messages import messages
+from app.routes.notifications import notifications
 from app.routes.donations import donations
 from app.routes.projects import projects
 from app.routes.volunteers import volunteers
@@ -19,6 +20,7 @@ blueprints = [
     admin,
     search,
     messages,
+    notifications,
     donations,
     projects,
     volunteers,

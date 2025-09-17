@@ -1,0 +1,536 @@
+{% extends '_macros.html' %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block styles %}
+<style>
+    :root {
+        --primary: #128C7E;
+        --primary-light: #25D366;
+        --primary-dark: #075E54;
+        --secondary: #34B7F1;
+        --info: #3498db;
+        --success: #27ae60;
+        --warning: #f39c12;
+        --danger: #e74c3c;
+        --light: #f8f9fa;
+        --dark: #343a40;
+        --gray: #6c757d;
+        --light-gray: #e9ecef;
+        --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        --transition: all 0.3s ease;
+    }
+    
+    .notifications-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px 15px;
+    }
+    
+    .notifications-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .notifications-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: var(--dark);
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
+    
+    .notifications-title i {
+        margin-right: 12px;
+        color: var(--primary);
+    }
+    
+    .notifications-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .action-btn {
+        padding: 8px 15px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition);
+        border: none;
+        background-color: var(--light-gray);
+        color: var(--dark);
+    }
+    
+    .action-btn i {
+        margin-right: 8px;
+    }
+    
+    .action-btn:hover {
+        background-color: #dee2e6;
+    }
+    
+    .action-btn.primary {
+        background-color: var(--primary);
+        color: white;
+    }
+    
+    .action-btn.primary:hover {
+        background-color: var(--primary-dark);
+    }
+    
+    .action-btn.danger {
+        background-color: var(--danger);
+        color: white;
+    }
+    
+    .action-btn.danger:hover {
+        background-color: #c0392b;
+    }
+    
+    .notifications-stats {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .stat-card {
+        background-color: white;
+        border-radius: 10px;
+        padding: 15px;
+        flex: 1;
+        box-shadow: var(--card-shadow);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        color: var(--gray);
+    }
+    
+    .unread .stat-value {
+        color: var(--primary);
+    }
+    
+    .read .stat-value {
+        color: var(--secondary);
+    }
+    
+    .notification-list {
+        margin-top: 20px;
+    }
+    
+    .notification-item {
+        background-color: white;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: var(--card-shadow);
+        display: flex;
+        position: relative;
+        transition: var(--transition);
+        border-left: 4px solid transparent;
+    }
+    
+    .notification-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+    
+    .notification-item.unread {
+        border-left-color: var(--primary);
+        background-color: rgba(18, 140, 126, 0.05);
+    }
+    
+    .notification-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background-color: var(--light-gray);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+    
+    .notification-icon i {
+        font-size: 20px;
+    }
+    
+    .notification-icon.message i {
+        color: var(--primary);
+    }
+    
+    .notification-icon.connection i {
+        color: var(--info);
+    }
+    
+    .notification-icon.system i {
+        color: var(--warning);
+    }
+    
+    .notification-content {
+        flex-grow: 1;
+    }
+    
+    .notification-text {
+        font-size: 15px;
+        margin-bottom: 5px;
+        color: var(--dark);
+    }
+    
+    .notification-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        color: var(--gray);
+    }
+    
+    .notification-time {
+        display: flex;
+        align-items: center;
+    }
+    
+    .notification-time i {
+        margin-right: 5px;
+        font-size: 12px;
+    }
+    
+    .notification-actions {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        display: flex;
+        gap: 10px;
+    }
+    
+    .notification-btn {
+        background: none;
+        border: none;
+        font-size: 14px;
+        cursor: pointer;
+        color: var(--gray);
+        transition: var(--transition);
+        padding: 5px;
+    }
+    
+    .notification-btn:hover {
+        color: var(--dark);
+    }
+    
+    .notification-btn.mark-read:hover {
+        color: var(--primary);
+    }
+    
+    .notification-btn.delete:hover {
+        color: var(--danger);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+        margin-top: 20px;
+    }
+    
+    .empty-state-icon {
+        font-size: 60px;
+        color: #d1d7db;
+        margin-bottom: 20px;
+    }
+    
+    .empty-state-title {
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: var(--dark);
+    }
+    
+    .empty-state-text {
+        color: var(--gray);
+        max-width: 400px;
+        margin: 0 auto 20px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .notifications-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .notifications-stats {
+            flex-direction: column;
+        }
+        
+        .stat-card {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+        }
+        
+        .stat-value {
+            margin-bottom: 0;
+            margin-right: 10px;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .notification-item {
+            flex-direction: column;
+        }
+        
+        .notification-icon {
+            margin-bottom: 10px;
+        }
+        
+        .notification-actions {
+            position: static;
+            margin-top: 10px;
+            justify-content: flex-end;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="notifications-container">
+    <div class="notifications-header">
+        <h1 class="notifications-title">
+            <i class="fas fa-bell"></i> Notifications
+        </h1>
+        
+        <div class="notifications-actions">
+            <form method="POST" action="{{ url_for('notifications.mark_all_notifications_read') }}" style="display: inline;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="action-btn primary" {% if unread_count == 0 %}disabled{% endif %}>
+                    <i class="fas fa-check-double"></i> Mark All Read
+                </button>
+            </form>
+            
+            <form method="POST" action="{{ url_for('notifications.clear_all_notifications') }}" style="display: inline;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="action-btn danger" {% if not notifications %}disabled{% endif %}>
+                    <i class="fas fa-trash"></i> Clear All
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="notifications-stats">
+        <div class="stat-card unread">
+            <div class="stat-value">{{ unread_count }}</div>
+            <div class="stat-label">Unread</div>
+        </div>
+        
+        <div class="stat-card read">
+            <div class="stat-value">{{ read_count }}</div>
+            <div class="stat-label">Read</div>
+        </div>
+        
+        <div class="stat-card total">
+            <div class="stat-value">{{ notifications|length }}</div>
+            <div class="stat-label">Total</div>
+        </div>
+    </div>
+    
+    <div class="notification-list">
+        {% if notifications %}
+            {% for notification in notifications %}
+                <div class="notification-item {% if not notification.read_status %}unread{% endif %}" id="notification-{{ notification.id }}">
+                    <div class="notification-icon {% if notification.type == 'new_message' %}message{% elif notification.type in ['connection_request', 'connection_accepted', 'connection_update'] %}connection{% else %}system{% endif %}">
+                        {% if notification.type == 'new_message' %}
+                            <i class="fas fa-envelope"></i>
+                        {% elif notification.type == 'connection_request' %}
+                            <i class="fas fa-user-plus"></i>
+                        {% elif notification.type == 'connection_accepted' %}
+                            <i class="fas fa-handshake"></i>
+                        {% elif notification.type == 'connection_update' %}
+                            <i class="fas fa-user-friends"></i>
+                        {% else %}
+                            <i class="fas fa-info-circle"></i>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="notification-content">
+                        <div class="notification-text">{{ notification.content }}</div>
+                        <div class="notification-meta">
+                            <div class="notification-time">
+                                <i class="far fa-clock"></i> {{ notification.timestamp|time_ago }}
+                            </div>
+                            
+                            {% if notification.type == 'new_message' %}
+                                <a href="{{ url_for('messages.messages_view', chat_with_id=notification.related_id) }}" class="notification-link">
+                                    <i class="fas fa-reply"></i> Reply
+                                </a>
+                            {% elif notification.type == 'connection_request' %}
+                                <a href="{{ url_for('messages.manage_connections') }}" class="notification-link">
+                                    <i class="fas fa-user-check"></i> Respond
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="notification-actions">
+                        {% if not notification.read_status %}
+                            <form method="POST" action="{{ url_for('notifications.mark_notification_read', notification_id=notification.id) }}" style="display: inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="notification-btn mark-read" title="Mark as read">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </form>
+                        {% endif %}
+                        
+                        <form method="POST" action="{{ url_for('notifications.delete_notification', notification_id=notification.id) }}" style="display: inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="notification-btn delete" title="Delete">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-bell-slash"></i>
+                </div>
+                <h3 class="empty-state-title">No Notifications</h3>
+                <p class="empty-state-text">You don't have any notifications at the moment.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Connect to Socket.IO
+        const socket = io();
+        
+        // Join personal notification room
+        socket.on('connect', function() {
+            socket.emit('join', { room: '{{ current_user.id }}' });
+            
+            // Get latest notifications
+            socket.emit('get_notifications');
+        });
+        
+        // Listen for new notifications
+        socket.on('new_notification', function(data) {
+            // Update notification count in navbar
+            updateNotificationCount(1, true);
+            
+            // Show browser notification
+            showBrowserNotification(
+                data.type === 'new_message' ? 'New Message' : 'New Notification',
+                data.content
+            );
+            
+            // Play notification sound
+            playNotificationSound();
+            
+            // Refresh the page to show the new notification
+            // In a real app, you might want to dynamically add the notification instead
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        });
+        
+        // Listen for notification count updates
+        socket.on('notification_count_update', function(data) {
+            updateNotificationCount(data.count, false);
+        });
+        
+        // Utility Functions
+        function updateNotificationCount(count, increment) {
+            const badge = document.getElementById('notification-badge');
+            if (!badge) return;
+            
+            let currentCount = parseInt(badge.textContent || '0');
+            
+            if (increment) {
+                currentCount += count;
+            } else {
+                currentCount = count;
+            }
+            
+            if (currentCount > 0) {
+                badge.textContent = currentCount;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+        
+        function playNotificationSound() {
+            const audio = new Audio('/static/sounds/notification.mp3');
+            audio.volume = 0.5;
+            audio.play().catch(e => console.log('Error playing sound:', e));
+        }
+        
+        function showBrowserNotification(title, body) {
+            // Check if browser supports notifications
+            if (!("Notification" in window)) {
+                console.log("This browser does not support desktop notification");
+                return;
+            }
+            
+            // Check if permission is already granted
+            if (Notification.permission === "granted") {
+                createNotification(title, body);
+            }
+            // Otherwise, ask for permission
+            else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(function (permission) {
+                    if (permission === "granted") {
+                        createNotification(title, body);
+                    }
+                });
+            }
+        }
+        
+        function createNotification(title, body) {
+            const notification = new Notification(title, {
+                body: body,
+                icon: '/static/img/logo.png'
+            });
+            
+            notification.onclick = function() {
+                window.focus();
+                notification.close();
+            };
+            
+            // Auto close after 5 seconds
+            setTimeout(() => {
+                notification.close();
+            }, 5000);
+        }
+        
+        // Request notification permission on page load
+        if ("Notification" in window && Notification.permission !== "denied") {
+            Notification.requestPermission();
+        }
+    });
+</script>
+{% endblock %}
+
